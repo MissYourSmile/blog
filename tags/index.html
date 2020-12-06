@@ -18,6 +18,8 @@
 
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css">
+  <script src="//cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.js"></script>
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
@@ -185,6 +187,8 @@
 
         <section class="site-overview-wrap sidebar-panel">
           <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
   <p class="site-author-name" itemprop="name">dhd</p>
   <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
 </div>
@@ -200,13 +204,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -264,10 +268,10 @@
       
       <div class="post-body"><div class="tag-cloud">
   <div class="tag-cloud-title">
-    目前共计 12 个标签
+    目前共计 13 个标签
   </div>
   <div class="tag-cloud-tags">
-    <a href="/tags/C-C/" style="font-size: 25.5px;" class="tag-cloud-8">C/C++</a> <a href="/tags/FTP/" style="font-size: 12px;" class="tag-cloud-0">FTP</a> <a href="/tags/Latex/" style="font-size: 12px;" class="tag-cloud-0">Latex</a> <a href="/tags/Linux%E5%86%85%E6%A0%B8/" style="font-size: 12px;" class="tag-cloud-0">Linux内核</a> <a href="/tags/vim/" style="font-size: 12px;" class="tag-cloud-0">vim</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" style="font-size: 16.5px;" class="tag-cloud-3">嵌入式</a> <a href="/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" style="font-size: 12px;" class="tag-cloud-0">微信小程序</a> <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" style="font-size: 21px;" class="tag-cloud-5">树莓派</a> <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" style="font-size: 12px;" class="tag-cloud-0">源码解析</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 12px;" class="tag-cloud-0">算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E9%87%8D%E8%A3%85/" style="font-size: 12px;" class="tag-cloud-0">系统重装</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 30px;" class="tag-cloud-10">设计模式</a>
+    <a href="/tags/C-C/" style="font-size: 25.5px;" class="tag-cloud-8">C/C++</a> <a href="/tags/FTP/" style="font-size: 12px;" class="tag-cloud-0">FTP</a> <a href="/tags/Latex/" style="font-size: 12px;" class="tag-cloud-0">Latex</a> <a href="/tags/Linux%E5%86%85%E6%A0%B8/" style="font-size: 12px;" class="tag-cloud-0">Linux内核</a> <a href="/tags/vim/" style="font-size: 12px;" class="tag-cloud-0">vim</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" style="font-size: 12px;" class="tag-cloud-0">博客搭建</a> <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" style="font-size: 16.5px;" class="tag-cloud-3">嵌入式</a> <a href="/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" style="font-size: 12px;" class="tag-cloud-0">微信小程序</a> <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" style="font-size: 21px;" class="tag-cloud-5">树莓派</a> <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" style="font-size: 12px;" class="tag-cloud-0">源码解析</a> <a href="/tags/%E7%AE%97%E6%B3%95/" style="font-size: 12px;" class="tag-cloud-0">算法</a> <a href="/tags/%E7%B3%BB%E7%BB%9F%E9%87%8D%E8%A3%85/" style="font-size: 12px;" class="tag-cloud-0">系统重装</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 30px;" class="tag-cloud-10">设计模式</a>
   </div>
 </div>
 
@@ -336,6 +340,26 @@
 
 
 
+  <script>
+    NProgress.configure({
+      showSpinner: true
+    });
+    NProgress.start();
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') {
+        NProgress.inc(0.8);
+      }
+      if (document.readyState === 'complete') {
+        NProgress.done();
+      }
+    });
+    document.addEventListener('pjax:send', () => {
+      NProgress.start();
+    });
+    document.addEventListener('pjax:success', () => {
+      NProgress.done();
+    });
+  </script>
 
   
 
