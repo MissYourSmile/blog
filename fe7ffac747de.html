@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="文主要总结了 C++ 中继承的实现细节，多态的概念和用途，以及虚函数继承时的虚表分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++继承、多态与虚表分析">
+<meta property="og:url" content="https://renshengjihe.cn/fe7ffac747de">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="文主要总结了 C++ 中继承的实现细节，多态的概念和用途，以及虚函数继承时的虚表分析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE1.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE2.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE3.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE4.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE5.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE6.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE7.png">
+<meta property="article:published_time" content="2019-06-29T02:59:21.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE1.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/fe7ffac747de.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/fe7ffac747de","path":"fe7ffac747de.html","title":"C++继承、多态与虚表分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++继承、多态与虚表分析 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">继承的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E7%9A%84%E6%9D%83%E9%99%90%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">继承的权限分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E5%90%8D%E9%9A%90%E8%97%8F"><span class="nav-number">3.</span> <span class="nav-text">同名隐藏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E5%87%BD%E6%95%B0%E9%87%8D%E5%86%99"><span class="nav-number">4.</span> <span class="nav-text">虚函数与函数重写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">纯虚函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%9E%90%E6%9E%84%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">6.</span> <span class="nav-text">虚析构的意义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF"><span class="nav-number">7.</span> <span class="nav-text">多继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF"><span class="nav-number">8.</span> <span class="nav-text">虚继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%80%81%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">9.</span> <span class="nav-text">多态的作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E5%87%BD%E6%95%B0%E8%A1%A8%E7%BB%93%E6%9E%84%E5%88%86%E6%9E%90"><span class="nav-number">10.</span> <span class="nav-text">虚函数表结构分析</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/fe7ffac747de">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++继承、多态与虚表分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-29 10:59:21" itemprop="dateCreated datePublished" datetime="2019-06-29T10:59:21+08:00">2019-06-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">文主要总结了 C++ 中继承的实现细节，多态的概念和用途，以及虚函数继承时的虚表分析。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在面向对象的程序设计语言中，继承是一个非常重要的概念，使用继承和多态可以提高代码的可复用性和可维护性。本文主要总结了 C++ 中继承的实现细节，多态的概念和用途，以及虚函数继承时的虚表分析。</p>
+<span id="more"></span>
+
+<h3 id="继承的概念"><a href="#继承的概念" class="headerlink" title="继承的概念"></a>继承的概念</h3><p>通过继承（inheritance）联系在一起的类构成一种层次关系，通常在层次关系的根部有一个基类（父类），其他类直接或间接地从基类继承而来，这些继承得到的类称为派生类（子类）。子类会继承父类的成员属性和成员方法。</p>
+<p>下面是一个简单的实现继承的例子。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span>   // 基类</span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Fun1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> m_a;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base  <span class="comment">// 派生类，继承于 Base</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Fun2()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> m_b;</span><br><span class="line">&#125;；</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived derived;</span><br><span class="line">    derived.m_a = <span class="number">10</span>;</span><br><span class="line">    derived.m_b = <span class="number">20</span>;</span><br><span class="line">    derived.<span class="built_in">fun1</span>();</span><br><span class="line">    derived.<span class="built_in">fun2</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="继承的权限分析"><a href="#继承的权限分析" class="headerlink" title="继承的权限分析"></a>继承的权限分析</h3><p>类成员的权限有三种：private、public、protected</p>
+<ul>
+<li>private 私有成员，只能自身访问（当然C++中还有友元，这里先不考虑了）。</li>
+<li>protected 保护成员，只能自身和非私有继承子类访问。</li>
+<li>public 公有成员，可以在外部访问，可以由非私有继承的子类访问</li>
+</ul>
+<p>这样描述起来有点乱，下面这张表对继承时的成员权限变化做出了总结</p>
+<table>
+<thead>
+<tr>
+<th align="center"></th>
+<th align="center">public 继承</th>
+<th align="center">protected 继承</th>
+<th align="center">private 继承</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">public 成员</td>
+<td align="center">public</td>
+<td align="center">protected</td>
+<td align="center">private</td>
+</tr>
+<tr>
+<td align="center">protected 成员</td>
+<td align="center">private</td>
+<td align="center">private</td>
+<td align="center">private</td>
+</tr>
+<tr>
+<td align="center">private 成员</td>
+<td align="center">不可访问</td>
+<td align="center">不可访问</td>
+<td align="center">不可访问</td>
+</tr>
+</tbody></table>
+<p>值得注意的还有一点，继承之后成员权限发生了变化，有些成员变得无法访问，但这并不意味着没有从父类那里继承对应的成员。</p>
+<p>看下面的例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span> m_c;</span><br><span class="line">    <span class="keyword">int</span> m_a;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">short</span> m_b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="built_in"><span class="keyword">sizeof</span></span>(Derived) &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>程序输出的结果为：</p>
+<blockquote>
+<p>12</p>
+</blockquote>
+<p>可见子类包含了父类的私有成员，但不能访问，并且通过字节对齐的规则可以知道，父类的成员在子类成员之前。（有关字节对齐的详细内容请移步<a href="/CCppByteAlign.html/#more">这里</a>）</p>
+<h3 id="同名隐藏"><a href="#同名隐藏" class="headerlink" title="同名隐藏"></a>同名隐藏</h3><p>在子类中声明一个与父类成员同名的成员（函数指函数名和参数列表完全相同，否则就是重载）时，父类中的成员会被隐藏。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base::fun()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Derived::fun()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived d;</span><br><span class="line">    d.<span class="built_in">fun</span>();            <span class="comment">// 调用子类的fun</span></span><br><span class="line">    d.Base::<span class="built_in">fun</span>();      <span class="comment">// 调用父类的fun</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序运行结果为：</p>
+<blockquote>
+<p>Derived::fun()<br>Base::fun()</p>
+</blockquote>
+<h3 id="虚函数与函数重写"><a href="#虚函数与函数重写" class="headerlink" title="虚函数与函数重写"></a>虚函数与函数重写</h3><p>C++中可以用 virtual 关键字来声明虚函数，子类在继承父类后，可以重写此函数，这与上文提到的同名隐藏不同，重写就是完全覆盖父类中定义的函数。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;        <span class="comment">// fun 被声明为虚函数</span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base::fun()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Derived::fun()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived d;</span><br><span class="line">    d.<span class="built_in">fun</span>();            <span class="comment">// 调用子类的fun</span></span><br><span class="line">    d.Base::<span class="built_in">fun</span>();      <span class="comment">// 调用父类的fun</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序运行结果为：</p>
+<blockquote>
+<p>Derived::fun()<br>Base::fun()</p>
+</blockquote>
+<p>emmmm，这样看来和同名隐藏也没什么区别嘛，那么虚函数的意义在哪里呢？</p>
+<p>貌似是这样，再来看下面的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived d;</span><br><span class="line">    Base *pb = &amp;d;</span><br><span class="line">    pb-&gt;<span class="built_in">fun</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在使用没有 virtual 的代码时，程序运行的结果为：</p>
+<blockquote>
+<p>Base::fun()</p>
+</blockquote>
+<p>在使用没有 virtual 的代码时，程序运行的结果为：</p>
+<blockquote>
+<p>Derived::fun()</p>
+</blockquote>
+<p>在使用了 virtual 时，使用父类的指针指向子类对象，可以访问到子类的成员方法。这就是多态的基本实现方式。</p>
+<h3 id="纯虚函数"><a href="#纯虚函数" class="headerlink" title="纯虚函数"></a>纯虚函数</h3><p>在 C++ 中可以声明纯虚函数，与普通虚函数不同的是，纯虚函数在父类中并没有给出明确的定义（即没有函数体），这就要求在子类中给出纯虚函数的定义。含有纯虚函数的类不能被实例化。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>= <span class="number">0</span>;     <span class="comment">// 纯虚函数</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;fun()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="虚析构的意义"><a href="#虚析构的意义" class="headerlink" title="虚析构的意义"></a>虚析构的意义</h3><p>顾名思义，虚析构就是虚的析构函数，如果一个类的析构函数中有必须执行的操作（比如动态空间的释放），并且这个类有可能被其他类继承，则必须将父类的析构函数声明为 virtual.</p>
+<p>在下面的例子中，演示了析构函数是否为虚时的不同效果。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ~<span class="built_in">Base</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~Base()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    ~<span class="built_in">Derived</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~Derived()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Base *pb = <span class="keyword">new</span> Derived;</span><br><span class="line">    <span class="keyword">delete</span> pb;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是未声明为虚析构函数时的情况，程序运行的结果为</p>
+<blockquote>
+<p>~Base()</p>
+</blockquote>
+<p>只调用了父类的析构函数，而子类中有可能的内存释放等必须要进行的操作就被没有执行。</p>
+<p>当把父类的析构函数声明为 virtual 时（ps:代码就不贴了哈），程序运行结果为</p>
+<blockquote>
+<p>~Derived()<br>~Base()</p>
+</blockquote>
+<p>这样就正确地执行了子类的析构函数。实际编程中，建议把有可能被继承的类的析构函数都声明为 virtual，因为你永远不知道以后会不会有人在子类中写独有的析构方法。</p>
+<h3 id="多继承"><a href="#多继承" class="headerlink" title="多继承"></a>多继承</h3><p>在 C++ 中，一个类可以继承于多个父类。</p>
+<ul>
+<li>父类构造的顺序与继承时的顺序有关，与构造函数参数初始化刘表无关。</li>
+<li>父类析构的顺序是构造的反顺序。</li>
+<li>虚继承的顺序会提前。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Base1</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Base1</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~Base1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base2</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Base2</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base2()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Base2</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~Base2()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base1, <span class="keyword">public</span> Base2</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Derived</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Derived&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    ~<span class="built_in">Derived</span>() &#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;~Derived()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Derived d;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+程序运行的结果是：<blockquote>
+<p>Base1()<br>Base2()<br>Derived()<br>~Derived()<br>~Base2()<br>~Base1()</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>虚继承主要解决的是多重继承时的二义性问题。如图所示：</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE1.png" alt="图1"></p>
+<p>在类 D 中，会出现两份类 A 的成员，这显然是不合理的，不仅会浪费空间，还会导致二义性的问题，虚继承很好地解决了这一问题。</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE2.png" alt="图2"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> :</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span> :</span> <span class="keyword">virtual</span> <span class="keyword">public</span> A</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">D</span> :</span> <span class="keyword">public</span> B, <span class="keyword">public</span> C</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    D d;</span><br><span class="line">    d.a = <span class="number">0</span>;    <span class="comment">// 如果不用虚继承，这句会报错</span></span><br><span class="line">    d.b = <span class="number">1</span>;</span><br><span class="line">    d.c = <span class="number">2</span>;</span><br><span class="line">    d.d = <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="多态的作用"><a href="#多态的作用" class="headerlink" title="多态的作用"></a>多态的作用</h3><p>下面通过一个多态解决实际问题的案例来说明多态的作用</p>
+<p>假设要开发一个画图程序，可以绘制不同的图形。</p>
+<ul>
+<li>定义一个 Shap 类，作为所有图形类的基类。</li>
+<li>每当需要增加一种图形时，不需要修改原先的代码，只需继承于 Shap 实现其中的 draw 方法即可。<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Shap</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rect</span> :</span> <span class="keyword">public</span> Shap</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Draw a rectangle&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Circle</span>:</span> <span class="keyword">public</span> Shap</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Draw a circle&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="虚函数表结构分析"><a href="#虚函数表结构分析" class="headerlink" title="虚函数表结构分析"></a>虚函数表结构分析</h3><p>虚函数表是 C++ 虚函数，虚继承这一系列机制的底层实现方式，我们来一步步揭开它神秘的面纱。</p>
+<p>当声明一个虚函数时，对应的类会多出一个虚表指针，指向虚函数表所在的内存空间，虚函数表保存了类中所有虚函数的函数指针，当一个类继承父类并重写其中的虚函数时，实际上就是修改了虚表中对应的函数指针的指向。</p>
+<p>下面的程序对虚函数表的结构进行了验证。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base::fun1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base::fun2()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*Fun)</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span>* Ptr;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;size of Base : &quot;</span> &lt;&lt; <span class="built_in"><span class="keyword">sizeof</span></span>(Base) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;size of Derived : &quot;</span> &lt;&lt; <span class="built_in"><span class="keyword">sizeof</span></span>(Derived) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    Base b;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of b&#x27;vir-table : &quot;</span> &lt;&lt; (Ptr*)(&amp;b) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of b&#x27;first vir-function : &quot;</span> &lt;&lt; (Ptr*)*(Ptr*)(&amp;b) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of b&#x27;second vir-function : &quot;</span> &lt;&lt; (Ptr*)*(Ptr*)(&amp;b) + <span class="number">1</span> &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    Fun pFun = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    pFun = (Fun)*(Ptr*)*(Ptr*)(&amp;b);</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    pFun = (Fun)*((Ptr*)*(Ptr*)(&amp;b) + <span class="number">1</span>);</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>程序运行的结果是：(ps:当然，地址不会大家都一样)</p>
+<blockquote>
+<p>size of Base : 8<br>size of Derived : 8<br>address of b’vir-table : 0x7ffdca2c0c50<br>address of b’first vir-function : 0x55c426c25d90<br>address of b’second vir-function : 0x55c426c25d98<br>Base::fun1()<br>Base::fun2()  </p>
+</blockquote>
+<p>如果上面的指针变换过程看的一头雾水，可以对照下面的图进行分析。</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE3.png" alt="图3"></p>
+<p>当子类有函数重写时，类图及虚表结构图如下：</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE4.png" alt="图4"></p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE5.png" alt="图5"></p>
+<p>当多继承时，类图及虚表结构图如下：</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE6.png" alt="图6"></p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190629-CppInheritance/%E5%9B%BE7.png" alt="图7"></p>
+<p>最后附上一段多继承时验证虚表结构的代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base1</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base1::fun1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base2::fun2()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base2</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base3::fun3()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">fun4</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Base4::fun4()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> :</span> <span class="keyword">public</span> Base1, <span class="keyword">public</span> Base2</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Derived::fun1()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">fun3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Derived::fun3()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">void</span><span class="params">(*Fun)</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span>* Ptr;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;size of Derived : &quot;</span> &lt;&lt; <span class="built_in"><span class="keyword">sizeof</span></span>(Derived) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    Derived d;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of d&#x27;vir-table1 : &quot;</span> &lt;&lt; (Ptr*)(&amp;d) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of d&#x27;first vir-function : &quot;</span> &lt;&lt; (Ptr*)*(Ptr*)(&amp;d) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of d&#x27;second vir-function : &quot;</span> &lt;&lt; (Ptr*)*(Ptr*)(&amp;d) + <span class="number">1</span> &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of b&#x27;vir-table2 : &quot;</span> &lt;&lt; (Ptr*)(&amp;d) + <span class="number">1</span> &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of d&#x27;first vir-function : &quot;</span> &lt;&lt; (Ptr*)*((Ptr*)(&amp;d) + <span class="number">1</span>) &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;address of d&#x27;second vir-function : &quot;</span> &lt;&lt; (Ptr*)*((Ptr*)(&amp;d) + <span class="number">1</span>) + <span class="number">1</span> &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    Fun pFun = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    pFun = (Fun)*(Ptr*)*(Ptr*)(&amp;d);</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    pFun = (Fun)*((Ptr*)*(Ptr*)(&amp;d) + <span class="number">1</span>);</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    pFun = (Fun)*((Ptr*)*((Ptr*)(&amp;d) + <span class="number">1</span>));</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    pFun = (Fun)*((Ptr*)*((Ptr*)(&amp;d) + <span class="number">1</span>) + <span class="number">1</span>);</span><br><span class="line">    <span class="built_in">pFun</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>End，如有不当之处，望指正。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/257979fa6a6d" rel="prev" title="C/C++字节对齐">
+                  <i class="fa fa-chevron-left"></i> C/C++字节对齐
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/730626e3a078" rel="next" title="树莓派折腾日记-自动控制风扇">
+                  树莓派折腾日记-自动控制风扇 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"a5d61c547e2bf6bcb981ba392ad7a6d4"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

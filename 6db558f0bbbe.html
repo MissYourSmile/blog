@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="在mini2440开发板上使用u-boot通过tftp方式加载内核，并通过nfs挂载根文件系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="u-boot加载内核并挂载根文件系统（mini2440）">
+<meta property="og:url" content="https://renshengjihe.cn/6db558f0bbbe">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="在mini2440开发板上使用u-boot通过tftp方式加载内核，并通过nfs挂载根文件系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/ubootdownload.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/uboottest.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/result.png">
+<meta property="article:published_time" content="2020-03-26T14:53:10.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.989Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="嵌入式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/ubootdownload.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/6db558f0bbbe.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/6db558f0bbbe","path":"6db558f0bbbe.html","title":"u-boot加载内核并挂载根文件系统（mini2440）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>u-boot加载内核并挂载根文件系统（mini2440） | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%B2%E5%8F%A3%E5%B7%A5%E5%85%B7%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">串口工具配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85minicom"><span class="nav-number">1.1.</span> <span class="nav-text">安装minicom</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AEminicom"><span class="nav-number">1.2.</span> <span class="nav-text">设置minicom</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E4%B8%B2%E5%8F%A3%E8%BE%93%E5%87%BA"><span class="nav-number">1.3.</span> <span class="nav-text">测试串口输出</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%83%A7%E5%85%A5u-boot"><span class="nav-number">2.</span> <span class="nav-text">烧入u-boot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96minitools"><span class="nav-number">2.1.</span> <span class="nav-text">获取minitools</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEminitools"><span class="nav-number">2.2.</span> <span class="nav-text">配置minitools</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%83%A7%E5%86%99u-boot"><span class="nav-number">2.3.</span> <span class="nav-text">烧写u-boot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95u-boot"><span class="nav-number">2.4.</span> <span class="nav-text">测试u-boot</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%BF%E4%B8%BB%E6%9C%BAtftp%E5%92%8Cnfs%E6%9C%8D%E5%8A%A1"><span class="nav-number">3.</span> <span class="nav-text">宿主机tftp和nfs服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tftp"><span class="nav-number">3.1.</span> <span class="nav-text">tftp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tftp%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.1.</span> <span class="nav-text">tftp安装与配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E5%88%B6Linux%E9%95%9C%E5%83%8F"><span class="nav-number">3.1.2.</span> <span class="nav-text">复制Linux镜像</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nfs"><span class="nav-number">3.2.</span> <span class="nav-text">nfs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nfs%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.1.</span> <span class="nav-text">nfs安装与配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E5%B9%B6%E9%80%82%E5%BD%93%E4%BF%AE%E6%94%B9%E6%A0%B9%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.2.2.</span> <span class="nav-text">解压并适当修改根文件系统</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#u-boot%E8%AE%BE%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">u-boot设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">4.1.</span> <span class="nav-text">命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#printenv"><span class="nav-number">4.1.1.</span> <span class="nav-text">printenv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setenv"><span class="nav-number">4.1.2.</span> <span class="nav-text">setenv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#saveenv"><span class="nav-number">4.1.3.</span> <span class="nav-text">saveenv</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tftpboot"><span class="nav-number">4.1.4.</span> <span class="nav-text">tftpboot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bootm"><span class="nav-number">4.1.5.</span> <span class="nav-text">bootm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">环境变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bootdelay"><span class="nav-number">4.2.1.</span> <span class="nav-text">bootdelay</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ipaddr-serverip-gatewayip-netmask"><span class="nav-number">4.2.2.</span> <span class="nav-text">ipaddr serverip gatewayip netmask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bootcmd"><span class="nav-number">4.2.3.</span> <span class="nav-text">bootcmd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bootargs"><span class="nav-number">4.2.4.</span> <span class="nav-text">bootargs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%90%AF%E8%BF%9B%E5%85%A5%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.3.</span> <span class="nav-text">重启进入系统</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/6db558f0bbbe">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          u-boot加载内核并挂载根文件系统（mini2440）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-26 22:53:10" itemprop="dateCreated datePublished" datetime="2020-03-26T22:53:10+08:00">2020-03-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">在mini2440开发板上使用u-boot通过tftp方式加载内核，并通过nfs挂载根文件系统。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文主要记录了在mini2440开发板上烧入u-boot，使用u-boot引导内核启动，并通过nfs挂载根文件系统的过程。</p>
+<p>以下是关于本文内容的几点说明</p>
+<ul>
+<li>本文涉及的uboot、内核和根文件系统均适用了官方光盘文件中提供的镜像，并不涉及编译和移植相关事项。</li>
+<li>使用minitool通过usb的方式将uboot烧入板子的Nand Flash，并未使用JLink进行烧写。</li>
+<li>宿主机环境为Ubuntu18.04，使用minicom作为串口工具</li>
+<li>所有 <code>$</code> 开头的命令都是在宿主机下执行的。</li>
+<li>所有 <code>#</code> 开头的命令都是通过串口在开发板上执行的。</li>
+<li>所有 <code>###</code> 开头的是注释内容。</li>
+<li>没有命令提示的部分为命令执行结果。</li>
+</ul>
+<h1 id="串口工具配置"><a href="#串口工具配置" class="headerlink" title="串口工具配置"></a>串口工具配置</h1><p>我这里使用了minicom作为串口工具。（当然，可以根据自己喜好选用其他同类工具）</p>
+<h2 id="安装minicom"><a href="#安装minicom" class="headerlink" title="安装minicom"></a>安装minicom</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install minicom</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置minicom"><a href="#设置minicom" class="headerlink" title="设置minicom"></a>设置minicom</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ minicom -s</span><br><span class="line">    +-----[configuration]------+                                     </span><br><span class="line">    | Filenames and paths      |                                     </span><br><span class="line">    | File transfer protocols  |                                     </span><br><span class="line">    | Serial port setup        |                                     </span><br><span class="line">    | Modem and dialing        |                                     </span><br><span class="line">    | Screen and keyboard      |</span><br><span class="line">    | Save setup as dfl        |</span><br><span class="line">    | Save setup as..          |</span><br><span class="line">    | Exit                     |</span><br><span class="line">    | Exit from Minicom        |</span><br><span class="line">    +--------------------------+</span><br><span class="line">### 选择第三项 [ Serial port setup ]</span><br><span class="line">    +-----------------------------------------------------------------------+</span><br><span class="line">    | A -    Serial Device      : /dev/ttyUSB0                              |</span><br><span class="line">    | B - Lockfile Location     : /var/lock                                 |</span><br><span class="line">    | C -   Callin Program      :                                           |</span><br><span class="line">    | D -  Callout Program      :                                           |</span><br><span class="line">    | E -    Bps/Par/Bits       : 115200 8N1                                |</span><br><span class="line">    | F - Hardware Flow Control : No                                        |</span><br><span class="line">    | G - Software Flow Control : No                                        |</span><br><span class="line">    |                                                                       |</span><br><span class="line">    |    Change which setting?                                              |</span><br><span class="line">    +-----------------------------------------------------------------------+</span><br><span class="line">### 输入 A B C ... 修改每个选项，设置为上边的值</span><br><span class="line">### 按 ESC 返回，选择 [ Save setup as dfl ]</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试串口输出"><a href="#测试串口输出" class="headerlink" title="测试串口输出"></a>测试串口输出</h2><p>刚买到的板子的<code>Nand Flash</code>中有可以启动的系统，连接好串口线，打开<code>minicom</code>，然后启动开发板，可以在串口输出中看到启动信息，最后进入一个linux命令行，可以执行一些linux命令试一试。</p>
+<h1 id="烧入u-boot"><a href="#烧入u-boot" class="headerlink" title="烧入u-boot"></a>烧入u-boot</h1><p>使用官方光盘中的minitools工具把u-boot烧写到板子的<code>Nand Flash</code>中。</p>
+<h2 id="获取minitools"><a href="#获取minitools" class="headerlink" title="获取minitools"></a>获取minitools</h2><p>在光盘文件 <code>FriendlyARM-2440-DVD/linux平台工具/MiniTools-USB下载工具</code> 下可以找到 <code>MiniTools-Linux-20150528.tgz</code></p>
+<p>如果没有找到，可以到 <code>FriendlyARM-2440-DVD/windows平台工具/MiniTools-USB下载工具</code> 下找找看。</p>
+<p>如果依然没有找到，可以找某宝客服要，也欢迎在文末评论区留言获取。</p>
+<p>将获取到的压缩文件解压到适合的位置，我将所有mini2440板子涉及的东西都放在了 <code>~/board-workspace/mini2440</code> 目录下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ pwd</span><br><span class="line">/home/dhd/board-workspace/mini2440/minitools</span><br><span class="line">$ ls</span><br><span class="line">icon.png  language-cn.qm  MiniTools  MiniTools_x64  settings.ini  start.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置minitools"><a href="#配置minitools" class="headerlink" title="配置minitools"></a>配置minitools</h2><p>运行minitools需要依赖<code>qtwebkit4</code>库，先安装。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install libqtwebkit4</span><br></pre></td></tr></table></figure>
+
+<p>这里有一个 <code>start.sh</code> 脚本文件用于启动，原先的<code>start.sh</code>使用<code>sudo</code>启动<code>MiniTools</code>，在<code>Ubuntu 18.04</code>下会无法正常运行，我把<code>sudo</code>去掉之后运行正常。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ diff start.sh start_old.sh </span><br><span class="line">7c7</span><br><span class="line">&lt; 		./MiniTools_x64 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">---</span><br><span class="line">&gt; 		sudo ./MiniTools_x64 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">12c12</span><br><span class="line">&lt; ./MiniTools 1&gt;/dev/null 2&gt;/dev/null</span><br><span class="line">---</span><br><span class="line">&gt; sudo ./MiniTools 1&gt;/dev/null 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<h2 id="烧写u-boot"><a href="#烧写u-boot" class="headerlink" title="烧写u-boot"></a>烧写u-boot</h2><p>运行<code>minitools</code>,用USB线连接开发板和电脑，从<code>Nor Flash</code>启动开发板，按以下步骤操作</p>
+<ol>
+<li>点击Linux</li>
+<li>选择u-boot镜像，<code>FriendlyARM-2440-DVD/images/u-boot.bin</code></li>
+<li>点击开始烧写</li>
+</ol>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/ubootdownload.png" alt="烧写u-boot"></p>
+<h2 id="测试u-boot"><a href="#测试u-boot" class="headerlink" title="测试u-boot"></a>测试u-boot</h2><p>连好串口线，运行<code>minicom</code>,从<code>Nand Flash</code>启动开发板，在串口终端快速按回车键即可进入<code>u-boot</code>交互模式。如下图所示：</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/uboottest.png" alt="测试u-boot"></p>
+<h1 id="宿主机tftp和nfs服务"><a href="#宿主机tftp和nfs服务" class="headerlink" title="宿主机tftp和nfs服务"></a>宿主机tftp和nfs服务</h1><p>TFTP（Trivial File Transfer Protocol,简单文件传输协议）是TCP/IP协议族中的一个用来在客户机与服务器之间进行简单文件传输的协议，提供不复杂、开销不大的文件传输服务。端口号为69。</p>
+<p>NFS（Network File System，网络文件系统）是基于UDP/IP协议的应用，最直观的说，它能让你把宿主机上的一个目录作为开发板所使用的文件系统，这样就可以方便地与开发板传输文件。</p>
+<p>u-boot 可以通过 tftp 从宿主机上下载 linux 内核镜像并加载内核，通过一些参数设置（下文会详细介绍），可以让内核通过 nfs 挂载根文件系统，这样，就可以方便地测试内核和驱动代码。 </p>
+<h2 id="tftp"><a href="#tftp" class="headerlink" title="tftp"></a>tftp</h2><h3 id="tftp安装与配置"><a href="#tftp安装与配置" class="headerlink" title="tftp安装与配置"></a>tftp安装与配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install tftpd-hpa</span><br><span class="line">$ sudo vim /etc/default/tftpd-hpa</span><br><span class="line">### 修改配置文件中的 TFTP_DIRECTORY 为适合的目录，根据自己实际情况填写。</span><br><span class="line">    TFTP_DIRECTORY=&quot;/home/dhd/board-workspace/tftpboot&quot;</span><br><span class="line">$ sudo service tftpd-hpa restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="复制Linux镜像"><a href="#复制Linux镜像" class="headerlink" title="复制Linux镜像"></a>复制Linux镜像</h3><p>官方光盘 <code>FriendlyARM-2440-DVD/images/linux/</code> 目录下有 <code>Linux</code> 内核镜像，直接复制到 <code>tftpboot</code> 目录下。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ cp ~/FriendlyARM-2440-DVD/images/linux/zImage_A70 ~/board-workspace/tftpboot/zImage</span><br></pre></td></tr></table></figure>
+
+<h2 id="nfs"><a href="#nfs" class="headerlink" title="nfs"></a>nfs</h2><h3 id="nfs安装与配置"><a href="#nfs安装与配置" class="headerlink" title="nfs安装与配置"></a>nfs安装与配置</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install nfs-kernel-server</span><br><span class="line">$ vim /etc/exports</span><br><span class="line">### 添加一行，其中的路径根据自己实际情况填写</span><br><span class="line">    /home/dhd/board-workspace/nfs/rootfs     *(rw,sync,no_subtree_check)</span><br><span class="line">$ sudo service nfs-kernel-server restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="解压并适当修改根文件系统"><a href="#解压并适当修改根文件系统" class="headerlink" title="解压并适当修改根文件系统"></a>解压并适当修改根文件系统</h3><h1 id="u-boot设置"><a href="#u-boot设置" class="headerlink" title="u-boot设置"></a>u-boot设置</h1><p>u-boot 的命令行操作方式和 Linux 类似，可以输入各种<strong>命令</strong>来控制 u-boot, 输入 <code>?</code> 或 <code>help</code> 可以查看支持的命令。通过修改<strong>环境变量</strong>，可以在不修改源码的情况下方便的修改 u-boot 运行时的一些数据和特性。</p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>本文主要使用了以下几个 u-boot 命令</p>
+<h3 id="printenv"><a href="#printenv" class="headerlink" title="printenv"></a>printenv</h3><p><strong>功能：</strong>打印所有环境变量<br><strong>用法：</strong><code>printenv</code></p>
+<h3 id="setenv"><a href="#setenv" class="headerlink" title="setenv"></a>setenv</h3><p><strong>功能：</strong>设置环境变量<br><strong>用法：</strong><code>setenv &lt;key&gt; &lt;value&gt;</code>，其中，<code>key</code>是变量名，<code>value</code>是变量值。如果<code>value</code>为空，则表示删除对应的环境变量</p>
+<h3 id="saveenv"><a href="#saveenv" class="headerlink" title="saveenv"></a>saveenv</h3><p><strong>功能：</strong>保存环境变量修改，使用setenv设置环境变量后不会掉电保存，需要保存后才不会丢失。<br><strong>用法：</strong><code>saveenv</code></p>
+<h3 id="tftpboot"><a href="#tftpboot" class="headerlink" title="tftpboot"></a>tftpboot</h3><p><strong>功能：</strong>通过tftp下载到内存<br><strong>用法：</strong><code>tftpboot [memaddr] &lt;filename&gt;</code>，其中，<code>memaddr</code>是内存地址，不填默认<code>0x30008000</code>，<code>filename</code>是要下载的文件名。</p>
+<h3 id="bootm"><a href="#bootm" class="headerlink" title="bootm"></a>bootm</h3><p><strong>功能：</strong>从指定内存位置加载内核<br><strong>用法：</strong><code>bootm [memaddr]</code>，其中，<code>memaddr</code>是内存地址，不填默认<code>0x30008000</code></p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>本文主要对以下几个环境变量进行修改</p>
+<h3 id="bootdelay"><a href="#bootdelay" class="headerlink" title="bootdelay"></a>bootdelay</h3><p><strong>功能：</strong>设置uboot启动时等待用户输入的延时。单位是秒。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># setenv bootdelay 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="ipaddr-serverip-gatewayip-netmask"><a href="#ipaddr-serverip-gatewayip-netmask" class="headerlink" title="ipaddr serverip gatewayip netmask"></a>ipaddr serverip gatewayip netmask</h3><p><strong>功能：</strong>设置开发板网络，服务器ip，网关，子网掩码</p>
+<p>这里我通过路由器连接了开发板网络，宿主机的ip为<code>192.168.31.2</code>, 开发板ip设置为<code>192.168.31.3</code>, 路由器ip为<code>192.168.31.1</code>.</p>
+<p>这些环境变量的设置如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># setenv ipaddr 192.168.31.3</span><br><span class="line"># setenv serverip 192.168.31.2</span><br><span class="line"># setenv gatewayip 192.168.31.1</span><br><span class="line"># setenv netmask 255.255.255.0</span><br></pre></td></tr></table></figure>
+
+<p>设置完成后使用 <code>ping</code> 命令测试网络连通性</p>
+<h3 id="bootcmd"><a href="#bootcmd" class="headerlink" title="bootcmd"></a>bootcmd</h3><p><strong>功能：</strong>设置开发板启动时默认执行的命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># setenv bootcmd &#x27;tftp 0x30008000 zImage; bootm 0x30008000&#x27;</span><br></pre></td></tr></table></figure>
+
+<h3 id="bootargs"><a href="#bootargs" class="headerlink" title="bootargs"></a>bootargs</h3><p><strong>功能：</strong>给内核传递的启动参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># setenv rootpath &#x27;/home/dhd/nfs/rootfs&#x27;</span><br><span class="line"># setenv bootargs &#x27;console=ttySAC0 init=/linuxrc root=nfs nfsroot=$&#123;serverip&#125;:$&#123;rootpath&#125;,nolock,proto=tcp,nfsvers=3 ip=$&#123;ipaddr&#125;:$&#123;serverip&#125;:$&#123;gatewayip&#125;:$&#123;netmask&#125;::eth0:off&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="重启进入系统"><a href="#重启进入系统" class="headerlink" title="重启进入系统"></a>重启进入系统</h2><p>上面的环境变量设置完成后，不要忘了用 <code>saveenv</code> 命令保存，然后重启开发板，不加干预直接进入系统。</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200326-mini2440env/result.png" alt="结果"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B5%8C%E5%85%A5%E5%BC%8F/" rel="tag"># 嵌入式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/47758a75a303" rel="prev" title="内核模块-hello.ko">
+                  <i class="fa fa-chevron-left"></i> 内核模块-hello.ko
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2e8a293a7cdd" rel="next" title="结合代码理解PID控制器">
+                  结合代码理解PID控制器 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f1734aab49efd1baeb8385d56c5dc059"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

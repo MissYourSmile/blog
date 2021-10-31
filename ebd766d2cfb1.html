@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Tinyhttpd是一个使用C语言编写的超轻量级的http服务器软件，本文对 Tinyhttpd 源码进行了剖析，有助于理解 web 服务器的原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tinyhttpd源码解析">
+<meta property="og:url" content="https://renshengjihe.cn/ebd766d2cfb1">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="Tinyhttpd是一个使用C语言编写的超轻量级的http服务器软件，本文对 Tinyhttpd 源码进行了剖析，有助于理解 web 服务器的原理">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_1.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_2.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_3.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/4_1.png">
+<meta property="article:published_time" content="2019-05-28T11:48:26.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="源码解析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_1.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/ebd766d2cfb1.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/ebd766d2cfb1","path":"ebd766d2cfb1.html","title":"Tinyhttpd源码解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Tinyhttpd源码解析 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E4%B8%8B%E8%BD%BD%EF%BC%86%E7%BC%96%E8%AF%91"><span class="nav-number">1.</span> <span class="nav-text">源码下载＆编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tinyhttpd-%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">Tinyhttpd 运行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9-%E6%99%AE%E9%80%9A%E7%BD%91%E9%A1%B5-%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">对 普通网页 的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9-CGI%E7%A8%8B%E5%BA%8F-%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">对 CGI程序 的处理</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/ebd766d2cfb1">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tinyhttpd源码解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-28 19:48:26" itemprop="dateCreated datePublished" datetime="2019-05-28T19:48:26+08:00">2019-05-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码解析</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">Tinyhttpd是一个使用C语言编写的超轻量级的http服务器软件，本文对 Tinyhttpd 源码进行了剖析，有助于理解 web 服务器的原理</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>Tinyhttpd是一个超轻量级的http服务器软件，使用C语言编写，代码仅有500行左右，实际生产环境中并不实用，但通过研究这短小精悍的500行代码，有助于我们了解web服务器的本质，弄清楚在访问一个网页的过程中，服务器都做了哪些工作。</p>
+<span id="more"></span>
+
+<h2 id="源码下载＆编译"><a href="#源码下载＆编译" class="headerlink" title="源码下载＆编译"></a>源码下载＆编译</h2><p>TinyHttpd的原版代码下载</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://sourceforge.net/projects/tinyhttpd/">https://sourceforge.net/projects/tinyhttpd/</a></p>
+</blockquote>
+<p>下载完成，解压后会得到这样一些文件：</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_1.png" alt="目录结构"></p>
+<p>主要需要看的是 httpd.c 里边的源码。<br>在这之前，先<code>make</code>把代码编译一下，看一下执行后的效果。</p>
+<p>编译的时候会报错，主要是一些线程函数和 Makefile 里的连接库错误，下面给出我的解决方案</p>
+<ol>
+<li><p>把 Makefile 文件中的编译选项中的 -lsocket 去掉。</p>
+</li>
+<li><p>436行<code>namelen</code>和491行<code>client_name_len</code>的变量类型改为 <code>socklen_t</code></p>
+</li>
+<li><p>accept_request用作线程的处理函数，函数原型需做出改变。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">accept_request</span><span class="params">(<span class="keyword">void</span> *)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">accept_request</span><span class="params">(<span class="keyword">void</span> * arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 此处为了尽可能少的修改原有代码，参数名改为arg</span></span><br><span class="line">    <span class="keyword">int</span> client = *(<span class="keyword">int</span>*)arg;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>496行<code>client_sock</code>参数类型错误，改为<code>&amp;client_sock</code></p>
+</li>
+<li><p>（可选）改端口号，TinyHttpd 默认的是动态绑定端口号，为方便后面使用改为固定 8080</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">u_short port = <span class="number">8080</span>;	<span class="comment">// main函数，480行</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>（可选）改IP地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// startup 函数	433行</span></span><br><span class="line">name.sin_addr.s_addr = inet_addr(<span class="string">&quot;127.0.0.1&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>至此，程序应该能正常编译通过，下面是示例程序的运行效果，</p>
+<p>浏览器输入<code>http://127.0.0.1:8080/index.html</code>（ip和端口号要以自己的实际情况为准）<br><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_2.png" alt="示例1"></p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/1_3.png" alt="示例1"></p>
+<blockquote>
+<p>ps: 此处如果第二个页面显示不出来，主要是由于缺少或找不到执行 perl 脚本的程序导致，安装 perl 并将 <code>htdocs/color.cgi</code> 的第一行改为自己电脑上的 perl 所在位置即可。</p>
+</blockquote>
+<h2 id="Tinyhttpd-运行流程"><a href="#Tinyhttpd-运行流程" class="headerlink" title="Tinyhttpd 运行流程"></a>Tinyhttpd 运行流程</h2><ol>
+<li>main函数，调用 startup 创建监听套接字开始监听，循环接收客户端连接。</li>
+<li>接收到一个客户端的连接后，创建一个新的线程，进入 accept_request 函数与客户端进行交互。</li>
+<li>根据请求的类型，判断后续处理的方式，如果是 POST 请求或带参数的 GET 请求，则采取 CGI 的处理方式（execute_cgi 函数），否则，采取普通网页的处理方式（serve_file函数）。</li>
+<li>数据传输完毕，关闭连接，线程退出。</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> server_sock = <span class="number">-1</span>;</span><br><span class="line">    u_short port = <span class="number">8080</span>;</span><br><span class="line">    <span class="keyword">int</span> client_sock = <span class="number">-1</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">client_name</span>;</span></span><br><span class="line">    <span class="keyword">socklen_t</span> client_name_len = <span class="keyword">sizeof</span>(client_name);</span><br><span class="line">    <span class="keyword">pthread_t</span> newthread;</span><br><span class="line"></span><br><span class="line">    server_sock = startup(&amp;port);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;httpd running on port %d\n&quot;</span>, port);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        client_sock = accept(server_sock,</span><br><span class="line">        	(struct sockaddr *)&amp;client_name,</span><br><span class="line">            &amp;client_name_len);</span><br><span class="line">            </span><br><span class="line">        <span class="keyword">if</span> (client_sock == <span class="number">-1</span>)</span><br><span class="line">        error_die(<span class="string">&quot;accept&quot;</span>);</span><br><span class="line">        <span class="comment">// 开启新线程</span></span><br><span class="line">        <span class="keyword">if</span> (pthread_create(&amp;newthread , <span class="literal">NULL</span>, </span><br><span class="line">        	accept_request, &amp;client_sock) != <span class="number">0</span>)</span><br><span class="line">        	perror(<span class="string">&quot;pthread_create&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(server_sock);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">accept_request</span><span class="params">(<span class="keyword">void</span>* arg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> client = *(<span class="keyword">int</span>*)arg;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="keyword">int</span> numchars;</span><br><span class="line">    <span class="keyword">char</span> method[<span class="number">255</span>];</span><br><span class="line">    <span class="keyword">char</span> url[<span class="number">255</span>];</span><br><span class="line">    <span class="keyword">char</span> path[<span class="number">512</span>];</span><br><span class="line">    <span class="keyword">size_t</span> i, j;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">stat</span> <span class="title">st</span>;</span></span><br><span class="line">    <span class="keyword">int</span> cgi = <span class="number">0</span>;	<span class="comment">// 是否cgi程序</span></span><br><span class="line">    <span class="keyword">char</span> *query_string = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">    numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    i = <span class="number">0</span>; j = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span> (!ISspace(buf[j]) &amp;&amp; (i &lt; <span class="keyword">sizeof</span>(method) - <span class="number">1</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        method[i] = buf[j];</span><br><span class="line">        i++; j++;</span><br><span class="line">    &#125;</span><br><span class="line">    method[i] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;GET&quot;</span>) &amp;&amp; strcasecmp(method, <span class="string">&quot;POST&quot;</span>))</span><br><span class="line">    &#123;</span><br><span class="line">        unimplemented(client);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;POST&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">        cgi = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (ISspace(buf[j]) &amp;&amp; (j &lt; <span class="keyword">sizeof</span>(buf)))</span><br><span class="line">    	j++;</span><br><span class="line">    <span class="keyword">while</span> (!ISspace(buf[j]) &amp;&amp; (i &lt; <span class="keyword">sizeof</span>(url) - <span class="number">1</span>) &amp;&amp; (j &lt; <span class="keyword">sizeof</span>(buf)))</span><br><span class="line">    &#123;</span><br><span class="line">        url[i] = buf[j];</span><br><span class="line">        i++; j++;</span><br><span class="line">    &#125;</span><br><span class="line">    url[i] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;GET&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        query_string = url;</span><br><span class="line">        <span class="keyword">while</span> ((*query_string != <span class="string">&#x27;?&#x27;</span>) &amp;&amp; (*query_string != <span class="string">&#x27;\0&#x27;</span>))</span><br><span class="line">        	query_string++;</span><br><span class="line">        <span class="keyword">if</span> (*query_string == <span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            cgi = <span class="number">1</span>;</span><br><span class="line">            *query_string = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">            query_string++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">sprintf</span>(path, <span class="string">&quot;htdocs%s&quot;</span>, url);</span><br><span class="line">    <span class="keyword">if</span> (path[<span class="built_in">strlen</span>(path) - <span class="number">1</span>] == <span class="string">&#x27;/&#x27;</span>)</span><br><span class="line">    	<span class="built_in">strcat</span>(path, <span class="string">&quot;index.html&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (stat(path, &amp;st) == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">while</span> ((numchars &gt; <span class="number">0</span>) &amp;&amp; <span class="built_in">strcmp</span>(<span class="string">&quot;\n&quot;</span>, buf))</span><br><span class="line">            numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">        not_found(client);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> ((st.st_mode &amp; S_IFMT) == S_IFDIR)</span><br><span class="line">        	<span class="built_in">strcat</span>(path, <span class="string">&quot;/index.html&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> ((st.st_mode &amp; S_IXUSR) ||</span><br><span class="line">        		(st.st_mode &amp; S_IXGRP) ||</span><br><span class="line">        		(st.st_mode &amp; S_IXOTH)    )</span><br><span class="line">        	cgi = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (!cgi)</span><br><span class="line">        	serve_file(client, path);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        	execute_cgi(client, path, method, query_string);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    close(client);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对-普通网页-的处理"><a href="#对-普通网页-的处理" class="headerlink" title="对 普通网页 的处理"></a>对 普通网页 的处理</h2><ul>
+<li>对于普通网页，TinyHttpd 会尝试打开该文件；</li>
+<li>如果打开成功，会将响应头和文件内容一并发给客户端进行响应；</li>
+<li>如果打开失败，会将网页找不到的错误发给客户端，这就是 404 not fount 出现的原因。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">serve_file</span><span class="params">(<span class="keyword">int</span> client, <span class="keyword">const</span> <span class="keyword">char</span> *filename)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	FILE *resource = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">int</span> numchars = <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line"></span><br><span class="line">	buf[<span class="number">0</span>] = <span class="string">&#x27;A&#x27;</span>; buf[<span class="number">1</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">	<span class="keyword">while</span> ((numchars &gt; <span class="number">0</span>) &amp;&amp; <span class="built_in">strcmp</span>(<span class="string">&quot;\n&quot;</span>, buf))  </span><br><span class="line">    	numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">	</span><br><span class="line">    resource = fopen(filename, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">	<span class="keyword">if</span> (resource == <span class="literal">NULL</span>)</span><br><span class="line">    	not_found(client);	<span class="comment">// 404</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">    	headers(client, filename); <span class="comment">// 响应头</span></span><br><span class="line">    	cat(client, resource); <span class="comment">// 网页主体</span></span><br><span class="line">    &#125;</span><br><span class="line">    fclose(resource);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="对-CGI程序-的处理"><a href="#对-CGI程序-的处理" class="headerlink" title="对 CGI程序 的处理"></a>对 CGI程序 的处理</h2><ul>
+<li>对于可执行的CGI程序，TinyHttpd 会 fork 一个进程进行执行。</li>
+<li>通过两个管道（cgi_output、cgi_input）进行父子进程通信；</li>
+<li>子进程（CGI程序）将将标准输入输出重定向至两个管道，这样的效果是：CGI程序中的标准输入会从 cgi_input 管道读取，标准输出会输出到 cgi_output 管道，所以在编写CGI程序时，只需要通过相应编程语言的输入输出函数进行操作，而不需要额外的接口。</li>
+<li>父进程会将 cgi_output 管道的内容发送给到客户端，cgi_input 管道的内容发送给子进程。</li>
+</ul>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190528-TinyHttpdSourceCode/4_1.png" alt="CGI示意图"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">execute_cgi</span><span class="params">(<span class="keyword">int</span> client, <span class="keyword">const</span> <span class="keyword">char</span> *path,</span></span></span><br><span class="line"><span class="params"><span class="function">                 <span class="keyword">const</span> <span class="keyword">char</span> *method, <span class="keyword">const</span> <span class="keyword">char</span> *query_string)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>];</span><br><span class="line">    <span class="keyword">int</span> cgi_output[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">int</span> cgi_input[<span class="number">2</span>];</span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="keyword">int</span> status;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">    <span class="keyword">int</span> numchars = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> content_length = <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    buf[<span class="number">0</span>] = <span class="string">&#x27;A&#x27;</span>; buf[<span class="number">1</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;GET&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">while</span> ((numchars &gt; <span class="number">0</span>) &amp;&amp; <span class="built_in">strcmp</span>(<span class="string">&quot;\n&quot;</span>, buf)) </span><br><span class="line">            numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">    <span class="keyword">else</span>    <span class="comment">/* POST */</span></span><br><span class="line">    &#123;</span><br><span class="line">        numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">        <span class="keyword">while</span> ((numchars &gt; <span class="number">0</span>) &amp;&amp; <span class="built_in">strcmp</span>(<span class="string">&quot;\n&quot;</span>, buf))</span><br><span class="line">        &#123;</span><br><span class="line">            buf[<span class="number">15</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (strcasecmp(buf, <span class="string">&quot;Content-Length:&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">            	content_length = atoi(&amp;(buf[<span class="number">16</span>]));</span><br><span class="line">            numchars = get_line(client, buf, <span class="keyword">sizeof</span>(buf));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (content_length == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            bad_request(client);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">sprintf</span>(buf, <span class="string">&quot;HTTP/1.0 200 OK\r\n&quot;</span>);</span><br><span class="line">    send(client, buf, <span class="built_in">strlen</span>(buf), <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pipe(cgi_output) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        cannot_execute(client);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (pipe(cgi_input) &lt; <span class="number">0</span>) </span><br><span class="line">    &#123;</span><br><span class="line">        cannot_execute(client);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ( (pid = fork()) &lt; <span class="number">0</span> ) </span><br><span class="line">    &#123;</span><br><span class="line">        cannot_execute(client);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (pid == <span class="number">0</span>)  <span class="comment">/* child: CGI script */</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">char</span> meth_env[<span class="number">255</span>];</span><br><span class="line">        <span class="keyword">char</span> query_env[<span class="number">255</span>];</span><br><span class="line">        <span class="keyword">char</span> length_env[<span class="number">255</span>];</span><br><span class="line"></span><br><span class="line">        dup2(cgi_output[<span class="number">1</span>], <span class="number">1</span>);	<span class="comment">// 输出重定向</span></span><br><span class="line">        dup2(cgi_input[<span class="number">0</span>], <span class="number">0</span>);	<span class="comment">// 输入重定向</span></span><br><span class="line">        close(cgi_output[<span class="number">0</span>]);</span><br><span class="line">        close(cgi_input[<span class="number">1</span>]);</span><br><span class="line">        <span class="built_in">sprintf</span>(meth_env, <span class="string">&quot;REQUEST_METHOD=%s&quot;</span>, method);</span><br><span class="line">        putenv(meth_env);</span><br><span class="line">        <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;GET&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">        &#123;	<span class="comment">//GET方式，数据以字符串的形式存入QUERY_STRING环境变量</span></span><br><span class="line">            <span class="built_in">sprintf</span>(query_env, <span class="string">&quot;QUERY_STRING=%s&quot;</span>, query_string);</span><br><span class="line">            putenv(query_env);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;   <span class="comment">//POST方式，数据的长度以字符串的形式存入CONTENT_LENGTH环境变量</span></span><br><span class="line">        	<span class="comment">// 数据的内容通过 cgi_input 管道发送给CGI程序</span></span><br><span class="line">            <span class="built_in">sprintf</span>(length_env, <span class="string">&quot;CONTENT_LENGTH=%d&quot;</span>, content_length);</span><br><span class="line">            putenv(length_env);</span><br><span class="line">        &#125;</span><br><span class="line">        execl(path, path, <span class="literal">NULL</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">else</span> </span><br><span class="line">    &#123;    <span class="comment">/* parent */</span></span><br><span class="line">        close(cgi_output[<span class="number">1</span>]);</span><br><span class="line">        close(cgi_input[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">if</span> (strcasecmp(method, <span class="string">&quot;POST&quot;</span>) == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; content_length; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            recv(client, &amp;c, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">            write(cgi_input[<span class="number">1</span>], &amp;c, <span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (read(cgi_output[<span class="number">0</span>], &amp;c, <span class="number">1</span>) &gt; <span class="number">0</span>)</span><br><span class="line">        	send(client, &amp;c, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        close(cgi_output[<span class="number">0</span>]);</span><br><span class="line">        close(cgi_input[<span class="number">1</span>]);</span><br><span class="line">        waitpid(pid, &amp;status, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="tag"># 源码解析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/15646a10e13c" rel="prev" title="vim打造C/C++开发环境">
+                  <i class="fa fa-chevron-left"></i> vim打造C/C++开发环境
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/df80ec7ed7bd" rel="next" title="C指针总结">
+                  C指针总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"d87b0461d0ae746accb8b40bc8798d34"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

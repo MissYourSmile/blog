@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="用远程终端控制树莓派，首先要知道树莓派的 ip 地址，本文展示了使用一个四位的七段数码管显示树莓派 ip 地址的实际操作过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派折腾日记-数码管显示 ip 地址">
+<meta property="og:url" content="https://renshengjihe.cn/06ae21c2c683">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="用远程终端控制树莓派，首先要知道树莓派的 ip 地址，本文展示了使用一个四位的七段数码管显示树莓派 ip 地址的实际操作过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/digit.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/pi.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/result.jpg">
+<meta property="article:published_time" content="2019-07-21T03:32:25.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="树莓派">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/digit.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/06ae21c2c683.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/06ae21c2c683","path":"06ae21c2c683.html","title":"树莓派折腾日记-数码管显示 ip 地址"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>树莓派折腾日记-数码管显示 ip 地址 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%90%E6%96%99%E6%B8%85%E5%8D%95"><span class="nav-number">1.</span> <span class="nav-text">材料清单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E8%B7%AF%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.</span> <span class="nav-text">电路连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%83%E6%AE%B5%E6%95%B0%E7%A0%81%E7%AE%A1%E7%9A%84%E5%8E%9F%E7%90%86%E5%9B%BE"><span class="nav-number">2.1.</span> <span class="nav-text">七段数码管的原理图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%A9%B1%E5%8A%A8"><span class="nav-number">2.2.</span> <span class="nav-text">如何驱动</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9E%E7%BA%BF%E5%9B%BE"><span class="nav-number">2.3.</span> <span class="nav-text">连线图</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A9%B1%E5%8A%A8%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">驱动代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%87%AA%E5%90%AF%E5%8A%A8"><span class="nav-number">4.</span> <span class="nav-text">配置自启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="nav-number">5.</span> <span class="nav-text">最终效果</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/06ae21c2c683">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          树莓派折腾日记-数码管显示 ip 地址
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-21 11:32:25" itemprop="dateCreated datePublished" datetime="2019-07-21T11:32:25+08:00">2019-07-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%A0%91%E8%8E%93%E6%B4%BE/" itemprop="url" rel="index"><span itemprop="name">树莓派</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">用远程终端控制树莓派，首先要知道树莓派的 ip 地址，本文展示了使用一个四位的七段数码管显示树莓派 ip 地址的实际操作过程。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="材料清单"><a href="#材料清单" class="headerlink" title="材料清单"></a>材料清单</h3><ul>
+<li>四位七段数码管一个(我用的是共阳极的)</li>
+<li>杜邦线若干(至少要 10 根)</li>
+</ul>
+<h3 id="电路连接"><a href="#电路连接" class="headerlink" title="电路连接"></a>电路连接</h3><h4 id="七段数码管的原理图"><a href="#七段数码管的原理图" class="headerlink" title="七段数码管的原理图"></a>七段数码管的原理图</h4><p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/digit.png" alt="数码管"></p>
+<h4 id="如何驱动"><a href="#如何驱动" class="headerlink" title="如何驱动"></a>如何驱动</h4><ul>
+<li>6 8 9 12 四个引脚用于选择数码管</li>
+<li>11 7 4 2 1 10 5 分别对应数码管的的 A B C D E F G 七个led灯</li>
+<li>通过树莓派的 GPIO 不停地改变这些引脚的状态来使数码管显示数字</li>
+</ul>
+<h4 id="连线图"><a href="#连线图" class="headerlink" title="连线图"></a>连线图</h4><p>树莓派 GPIO 参考图<br><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/pi.png" alt="数码管"></p>
+<p>以下表所示的对应关系连线，(ps: 具体可自行分配，仅供参考)</p>
+<table>
+<thead>
+<tr>
+<th align="right">树莓派 GPIO 功能名</th>
+<th align="left">对应数码管的引脚</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">GPIO.0</td>
+<td align="left">6</td>
+</tr>
+<tr>
+<td align="right">GPIO.1</td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="right">GPIO.2</td>
+<td align="left">9</td>
+</tr>
+<tr>
+<td align="right">GPIO.21</td>
+<td align="left">11</td>
+</tr>
+<tr>
+<td align="right">GPIO.22</td>
+<td align="left">7</td>
+</tr>
+<tr>
+<td align="right">GPIO.23</td>
+<td align="left">4</td>
+</tr>
+<tr>
+<td align="right">GPIO.24</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="right">GPIO.25</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="right">GPIO.26</td>
+<td align="left">10</td>
+</tr>
+<tr>
+<td align="right">GPIO.27</td>
+<td align="left">5</td>
+</tr>
+</tbody></table>
+<h3 id="驱动代码"><a href="#驱动代码" class="headerlink" title="驱动代码"></a>驱动代码</h3><p>用 C 语言写的驱动程序，使用了 wiringPi 库</p>
+<p>wiringPi 库用如下方式下载</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> git://git.drogon.net/wiringPi</span><br></pre></td></tr></table></figure>
+<p>也可以到 <a target="_blank" rel="noopener" href="http://wiringpi.com/">http://wiringpi.com</a> 进行下载</p>
+<p>下面是驱动代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File Name: led.c</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;signal.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;wiringPi.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/socket.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;arpa/inet.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;netinet/in.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;netdb.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;net/if.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> *    __1__</span></span><br><span class="line"><span class="comment"> *   |     |</span></span><br><span class="line"><span class="comment"> *   6     2</span></span><br><span class="line"><span class="comment"> *   |--7--|</span></span><br><span class="line"><span class="comment"> *   |     |</span></span><br><span class="line"><span class="comment"> *   5     3</span></span><br><span class="line"><span class="comment"> *   |__4__|</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"> * 0 -- 0111111 -- 0x3f</span></span><br><span class="line"><span class="comment"> * 1 -- 0000110 -- 0x06</span></span><br><span class="line"><span class="comment"> * 2 -- 1011011 -- 0x5b</span></span><br><span class="line"><span class="comment"> * 3 -- 1001111 -- 0x4f</span></span><br><span class="line"><span class="comment"> * 4 -- 1100110 -- 0x66</span></span><br><span class="line"><span class="comment"> * 5 -- 1101101 -- 0x6d</span></span><br><span class="line"><span class="comment"> * 6 -- 1111101 -- 0x7d</span></span><br><span class="line"><span class="comment"> * 7 -- 0000111 -- 0x07</span></span><br><span class="line"><span class="comment"> * 8 -- 1111111 -- 0x7f</span></span><br><span class="line"><span class="comment"> * 9 -- 1101111 -- 0x6f</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_NUM 7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> SEL_NUM 3</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> IP_SIZE 16</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> pins[] = &#123;<span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">24</span>, <span class="number">25</span>, <span class="number">26</span>, <span class="number">27</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> sels[] = &#123;<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> nums[] = &#123;<span class="number">0x3f</span>, <span class="number">0x06</span>, <span class="number">0x5b</span>, <span class="number">0x4f</span>, <span class="number">0x66</span>, <span class="number">0x6d</span>, <span class="number">0x7d</span>, <span class="number">0x07</span>, <span class="number">0x7f</span>, <span class="number">0x6f</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 处理 SIGINT 信号，保证程序退出时 GPIO 复位，使得数码管熄灭</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">signal_handle</span><span class="params">(<span class="keyword">int</span> signum)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; PIN_NUM; ++i)</span><br><span class="line">        digitalWrite(pins[i], LOW); </span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; SEL_NUM; ++i)</span><br><span class="line">        digitalWrite(sels[i], LOW);</span><br><span class="line">    <span class="built_in">exit</span>(EXIT_SUCCESS);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    wiringPiSetup();</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; PIN_NUM; ++i)</span><br><span class="line">        pinMode(pins[i], OUTPUT);</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; SEL_NUM; ++i)</span><br><span class="line">        pinMode(sels[i], OUTPUT);</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; PIN_NUM; ++i)</span><br><span class="line">        digitalWrite(pins[i], LOW); </span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; SEL_NUM; ++i)</span><br><span class="line">        digitalWrite(sels[i], LOW);</span><br><span class="line">    signal(SIGINT, signal_handle);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Use Ctrl+c to exit.\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">flush</span><span class="params">(<span class="keyword">int</span> sel, <span class="keyword">int</span> num)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> n = nums[num];</span><br><span class="line">    digitalWrite(sels[sel], HIGH);</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; SEL_NUM; ++i)</span><br><span class="line">        <span class="keyword">if</span>(sel != i)</span><br><span class="line">            digitalWrite(sels[i], LOW);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; PIN_NUM; ++i)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span>(n &amp; (<span class="number">1</span> &lt;&lt; i))</span><br><span class="line">            digitalWrite(pins[i], LOW);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            digitalWrite(pins[i], HIGH);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取某个网卡的ip地址</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">getlocalip</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> * eth_inf, <span class="keyword">char</span> *ip)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sd;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">sin</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">ifreq</span> <span class="title">ifr</span>;</span></span><br><span class="line"></span><br><span class="line">    sd = socket(AF_INET, SOCK_DGRAM, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>( <span class="number">-1</span> == sd )</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">&quot;Socket error.&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">strncpy</span>(ifr.ifr_name, eth_inf, IFNAMSIZ);</span><br><span class="line">    ifr.ifr_name[IFNAMSIZ - <span class="number">1</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>( ioctl(sd, SIOCGIFADDR, &amp;ifr) &lt; <span class="number">0</span> )</span><br><span class="line">    &#123;</span><br><span class="line">        perror(<span class="string">&quot;ioctl error.&quot;</span>);</span><br><span class="line">        close(sd);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">memcpy</span>(&amp;<span class="built_in">sin</span>, &amp;ifr.ifr_addr, <span class="keyword">sizeof</span>(<span class="built_in">sin</span>));</span><br><span class="line">    <span class="built_in">snprintf</span>(ip, IP_SIZE, <span class="string">&quot;%s&quot;</span>, inet_ntoa(<span class="built_in">sin</span>.sin_addr));</span><br><span class="line"></span><br><span class="line">    close(sd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    init();</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span> ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> ip[<span class="number">16</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="comment">// 此处获取哪个网卡的地址由实际情况而定</span></span><br><span class="line">    <span class="comment">// 我的树莓派是用无线联网的，所以用的 wlan0 </span></span><br><span class="line">    <span class="comment">// 网卡名可通过 ifconfig 命令查看</span></span><br><span class="line">    <span class="keyword">int</span> ret = getlocalip(<span class="string">&quot;wlan0&quot;</span>, ip);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, ip);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 在局域网下，ip 地址一般只有最后一位不同</span></span><br><span class="line">    <span class="comment">// 只获取点分十进制 ip 地址的最后一位</span></span><br><span class="line">    <span class="keyword">int</span> led0, led1, led2;</span><br><span class="line">    <span class="keyword">if</span>(ret &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        led0 = <span class="number">8</span>;</span><br><span class="line">        led1 = <span class="number">8</span>;</span><br><span class="line">        led2 = <span class="number">8</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> ip_len = <span class="built_in">strlen</span>(ip);</span><br><span class="line">        led0 = ip[ip_len<span class="number">-1</span>] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">        led1 = ip[ip_len<span class="number">-2</span>] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">        led2 = ip[ip_len<span class="number">-3</span>] - <span class="string">&#x27;0&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>( ; ; )</span><br><span class="line">    &#123;</span><br><span class="line">        flush(<span class="number">0</span>, led0);</span><br><span class="line">        delay(<span class="number">5</span>);    <span class="comment">// 如果不加延时，显示数字会不清晰</span></span><br><span class="line">        flush(<span class="number">1</span>, led1);</span><br><span class="line">        delay(<span class="number">5</span>);</span><br><span class="line">        flush(<span class="number">2</span>, led2);</span><br><span class="line">        delay(<span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置自启动"><a href="#配置自启动" class="headerlink" title="配置自启动"></a>配置自启动</h3><p>在 <code>/etc/init.d/</code> 下新建文件 <code>led_show_ip</code> 并给上执行权限</p>
+<p>文件内容如下</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># /etc/init.d/temp-ctrl</span></span><br><span class="line"><span class="comment"># Default-Start: 	2 3 4 5</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> <span class="string">&quot;<span class="variable">$1</span>&quot;</span> <span class="keyword">in</span></span><br><span class="line">    start)</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;start temp ctrl&quot;</span></span><br><span class="line">        nohup /home/pi/gpio/led &amp;</span><br><span class="line">        ;;</span><br><span class="line">    stop)</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;stop temp ctrl&quot;</span></span><br><span class="line">        <span class="built_in">kill</span> -2 $(ps aux | grep -m 1 <span class="string">&#x27;/home/pi/gpio/led&#x27;</span> | awk <span class="string">&#x27;&#123; print $2 &#125;&#x27;</span>)</span><br><span class="line">        ;;</span><br><span class="line">    *)</span><br><span class="line">        <span class="built_in">echo</span> <span class="string">&quot;Usage : service led-show-ip start/stop&quot;</span></span><br><span class="line">        <span class="built_in">exit</span> 1</span><br><span class="line">        ;;</span><br><span class="line"><span class="keyword">esac</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>/etc/rc.local</code> 中 <code>exit 0</code> 之前添加一行 </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/led_show_ip start</span><br><span class="line"></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></figure>
+
+<h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190721-PiLedShowIp/result.jpg" alt="结果"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/" rel="tag"># 树莓派</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/730626e3a078" rel="prev" title="树莓派折腾日记-自动控制风扇">
+                  <i class="fa fa-chevron-left"></i> 树莓派折腾日记-自动控制风扇
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/26a487cfe9e2" rel="next" title="设计模式－模板方法模式(Template Method)">
+                  设计模式－模板方法模式(Template Method) <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"3951bfa437586351ea9f297d173cc876"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

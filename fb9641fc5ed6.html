@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="LaTeX是一种是一种基于ΤeX的排版系统，使用LaTeX，我们可以方便地排版出漂亮的文章，甚至书籍，本文记录了本人在学习和使用LaTeX过程中涉及到的一些问题及其解决方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Latex笔记">
+<meta property="og:url" content="https://renshengjihe.cn/fb9641fc5ed6">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="LaTeX是一种是一种基于ΤeX的排版系统，使用LaTeX，我们可以方便地排版出漂亮的文章，甚至书籍，本文记录了本人在学习和使用LaTeX过程中涉及到的一些问题及其解决方案。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/helloworld.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/label_ref.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/enumerate.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/equation_1.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/equation_2.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/theorem.png">
+<meta property="article:published_time" content="2020-02-13T12:22:41.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.989Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="Latex">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/helloworld.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/fb9641fc5ed6.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/fb9641fc5ed6","path":"fb9641fc5ed6.html","title":"Latex笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Latex笔记 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">下载与安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-texlive"><span class="nav-number">1.1.</span> <span class="nav-text">安装 texlive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E4%B8%80%E4%B8%AA%E5%90%88%E9%80%82%E7%9A%84-LaTeX-%E7%BC%96%E8%BE%91%E5%99%A8"><span class="nav-number">1.2.</span> <span class="nav-text">选择一个合适的 $\LaTeX$ 编辑器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hello-World"><span class="nav-number">2.</span> <span class="nav-text">Hello World</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">2.1.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-number">2.2.</span> <span class="nav-text">环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E7%B1%BB"><span class="nav-number">2.3.</span> <span class="nav-text">文档类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E8%A8%80"><span class="nav-number">2.4.</span> <span class="nav-text">导言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E6%96%87"><span class="nav-number">2.5.</span> <span class="nav-text">正文</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E5%B8%AE%E5%8A%A9"><span class="nav-number">3.</span> <span class="nav-text">如何获取帮助</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E5%AD%97%E4%BD%93"><span class="nav-number">4.</span> <span class="nav-text">中文字体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E7%B1%BB%E5%92%8C%E7%BC%96%E7%A0%81"><span class="nav-number">4.1.</span> <span class="nav-text">文档类和编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E5%AD%97%E4%BD%93%E5%92%8C%E5%AD%97%E5%8F%B7"><span class="nav-number">4.2.</span> <span class="nav-text">设置字体和字号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E6%96%87%E7%B2%97%E4%BD%93%E5%92%8C%E6%96%9C%E4%BD%93"><span class="nav-number">4.3.</span> <span class="nav-text">中文粗体和斜体</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%84%E7%A7%8D%E8%B7%9D%E7%A6%BB%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">各种距离设置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E8%B7%9D"><span class="nav-number">5.1.</span> <span class="nav-text">行距</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A6%96%E8%A1%8C%E7%BC%A9%E8%BF%9B"><span class="nav-number">5.2.</span> <span class="nav-text">首行缩进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B5%E9%9D%A2%E8%BE%B9%E8%B7%9D"><span class="nav-number">5.3.</span> <span class="nav-text">页面边距</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E5%BC%95%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">交叉引用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E5%BC%95%E7%94%A8%E6%96%87%E5%AD%97%E5%AD%97%E4%BD%93%EF%BC%88%E4%BB%A5%E9%93%BE%E6%8E%A5%E5%BD%A2%E5%BC%8F%E6%98%BE%E7%A4%BA%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">改变引用文字字体（以链接形式显示）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%97%E8%A1%A8"><span class="nav-number">7.</span> <span class="nav-text">列表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E7%A7%8D%E4%B8%8D%E5%90%8C%E7%9A%84%E5%88%97%E8%A1%A8"><span class="nav-number">7.1.</span> <span class="nav-text">三种不同的列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8%E9%97%B4%E8%B7%9D"><span class="nav-number">7.2.</span> <span class="nav-text">列表间距</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E5%AD%A6%E5%85%AC%E5%BC%8F"><span class="nav-number">8.</span> <span class="nav-text">数学公式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AMS%E5%AE%8F%E9%9B%86"><span class="nav-number">8.1.</span> <span class="nav-text">AMS宏集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%8C%E5%86%85%E5%85%AC%E5%BC%8F%E4%B8%8E%E8%A1%8C%E9%97%B4%E5%85%AC%E5%BC%8F"><span class="nav-number">8.2.</span> <span class="nav-text">行内公式与行间公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F%E7%BC%96%E5%8F%B7"><span class="nav-number">8.3.</span> <span class="nav-text">公式编号</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%A1%8C%E5%85%AC%E5%BC%8F"><span class="nav-number">8.4.</span> <span class="nav-text">多行公式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E7%8E%AF%E5%A2%83"><span class="nav-number">9.</span> <span class="nav-text">定理环境</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LaTeX-%E5%8E%9F%E5%A7%8B%E5%AE%9A%E7%90%86%E7%8E%AF%E5%A2%83"><span class="nav-number">9.1.</span> <span class="nav-text">$\LaTeX$ 原始定理环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9A%E7%90%86%E7%8E%AF%E5%A2%83%E6%A0%B7%E5%BC%8F"><span class="nav-number">9.2.</span> <span class="nav-text">自定义定理环境样式</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/fb9641fc5ed6">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Latex笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-02-13 20:22:41" itemprop="dateCreated datePublished" datetime="2020-02-13T20:22:41+08:00">2020-02-13</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%86%99%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">写文章</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">LaTeX是一种是一种基于ΤeX的排版系统，使用LaTeX，我们可以方便地排版出漂亮的文章，甚至书籍，本文记录了本人在学习和使用LaTeX过程中涉及到的一些问题及其解决方案。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>$\LaTeX$是一种是一种基于$\TeX$的排版系统，使用$\LaTeX$，我们可以方便地排版出漂亮的文章，甚至书籍，本文记录了本人在学习和使用$\LaTeX$过程中涉及到的一些问题及其解决方案。</p>
+<h1 id="下载与安装"><a href="#下载与安装" class="headerlink" title="下载与安装"></a>下载与安装</h1><h2 id="安装-texlive"><a href="#安装-texlive" class="headerlink" title="安装 texlive"></a>安装 texlive</h2><p>我使用的环境是 Ubuntu, Linux 下基本可以用软件包管理器安装。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install texlive-full</span><br></pre></td></tr></table></figure>
+<p>对于 Windows, 可以在官网下载相应的安装包进行安装，不再赘述。</p>
+<h2 id="选择一个合适的-LaTeX-编辑器"><a href="#选择一个合适的-LaTeX-编辑器" class="headerlink" title="选择一个合适的 $\LaTeX$ 编辑器"></a>选择一个合适的 $\LaTeX$ 编辑器</h2><p>你当然可以使用诸如 TexStudio、Texmaker 等专门的工具来编写 $\LaTeX$, 这里我使用的是 VSCode + $\LaTeX$ 插件进行编辑。具体配置过程如下：</p>
+<ul>
+<li>首先，你要确保已经正确安装了 texlive.</li>
+<li>打开 VSCode, 在插件中搜索 $\LaTeX$ Workshop 进行安装。</li>
+<li>在 Setting 中添加配置代码<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;latex-workshop.latex.tools&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 编译工具和命令</span></span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;xelatex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;command&quot;</span>: <span class="string">&quot;xelatex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;args&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;-synctex=1&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-interaction=nonstopmode&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-file-line-error&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-pdf&quot;</span>,</span><br><span class="line">            <span class="string">&quot;%DOCFILE%&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;pdflatex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;command&quot;</span>: <span class="string">&quot;pdflatex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;args&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;-synctex=1&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-interaction=nonstopmode&quot;</span>,</span><br><span class="line">            <span class="string">&quot;-file-line-error&quot;</span>,</span><br><span class="line">            <span class="string">&quot;%DOCFILE%&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;bibtex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;command&quot;</span>: <span class="string">&quot;bibtex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;args&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;%DOCFILE%&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">],</span><br><span class="line"></span><br><span class="line"><span class="string">&quot;latex-workshop.latex.recipes&quot;</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;xelatex&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;tools&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;xelatex&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;xe-&gt;bib-&gt;xe-&gt;xe&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;tools&quot;</span>: [</span><br><span class="line">            <span class="string">&quot;xelatex&quot;</span>,</span><br><span class="line">            <span class="string">&quot;bibtex&quot;</span>,</span><br><span class="line">            <span class="string">&quot;xelatex&quot;</span>,</span><br><span class="line">            <span class="string">&quot;xelatex&quot;</span></span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">],</span><br><span class="line"><span class="string">&quot;latex-workshop.latex.autoBuild.run&quot;</span>: <span class="string">&quot;never&quot;</span>,  <span class="comment">// 关闭保存时自动编译</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello World"></a>Hello World</h1><p>下面将通过一个简单的例子来展现 $\LaTeX$ 源文件的构成。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">\documentclass&#123;article&#125;       % 文档类</span><br><span class="line"></span><br><span class="line">% ===========</span><br><span class="line">% == 导言区 ==</span><br><span class="line">% ===========</span><br><span class="line"></span><br><span class="line">% 正文</span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line">\section&#123;Hello World&#125;       % 命令 section</span><br><span class="line">Hello World</span><br><span class="line"></span><br><span class="line">% 环境 数学公式</span><br><span class="line">\begin&#123;equation&#125;            </span><br><span class="line">    a = \sqrt&#123;b^2&#125;</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+<p>编译后的内容为</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/helloworld.png" alt="HelloWorld"></p>
+<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p>$\LaTeX$ 中命令以反斜线 <code>\</code> 开头,为以下两种形式之一:</p>
+<ul>
+<li>反斜线和后面的一串字母，如上边例子中的 <code>\section</code></li>
+<li>反斜线和后面的单个非字母符号，如 <code>\$</code>.</li>
+</ul>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>$\LaTeX$ 中还包括环境,用以令一些效果在局部生效，或是生成特殊的文档元素。$\LaTeX$ 环境的用法为一对命令 <code>\begin</code> 和 <code>\end</code>.<br>上述例子中的 <code>document</code> 和 <code>equation</code> 都是环境。</p>
+<h2 id="文档类"><a href="#文档类" class="headerlink" title="文档类"></a>文档类</h2><p>文档类规定了 $\LaTeX$ 源代码所要生成的文档的性质——普通文章、书籍、演示文稿、个人简历等等。$\LaTeX$ 源代码的开头须用 \documentclass 指定文档类:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[⟨options⟩]&#123;⟨class-name⟩&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>⟨class-name⟩</code> 为文档类的名称，如 $\LaTeX$ 提供的 <code>article</code>, <code>book</code>, <code>report</code>,在其基础上派生的一些文档类如支持中文排版的 <code>ctexart</code> / <code>ctexbook</code> / <code>ctexrep</code>.<br><code>&lt;options&gt;</code>是可传入的参数，如基本字号、纸张大小、编码方式等。</p>
+<h2 id="导言"><a href="#导言" class="headerlink" title="导言"></a>导言</h2><p>在 <code>\documentclass</code> 和 <code>\begin&#123;document&#125;</code> 之间的位置称为导言区。在导言区中一般会使用 <code>\usepackage</code> 调用宏包,以及会进行对文档的全局设置。</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><p><code>document</code> 环境当中的内容是文档正文。这部分内容是最终会呈现出来的内容。</p>
+<h1 id="如何获取帮助"><a href="#如何获取帮助" class="headerlink" title="如何获取帮助"></a>如何获取帮助</h1><p>没有哪一篇技术博客可以解决你在使用过程中遇到的所有问题，当你发现一个问题在百度上找不出你想要的答案时该怎么办呢，这时候就要求助于相应宏包的官方文档。<br>打开命令行，输入以下命令，便可以查看宏包文档。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">texdoc &lt;package-name&gt;</span><br></pre></td></tr></table></figure>
+<p><code>&lt;package-name&gt;</code>是宏包的名称，在下面的介绍中，我会把每个部分使用到的一些宏包贴出来供大家参考。</p>
+<h1 id="中文字体"><a href="#中文字体" class="headerlink" title="中文字体"></a>中文字体</h1><h2 id="文档类和编码"><a href="#文档类和编码" class="headerlink" title="文档类和编码"></a>文档类和编码</h2><p>首先要使用支持中文的文档类，并指定编码为 <code>UTF8</code>.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexbook&#125;</span><br></pre></td></tr></table></figure>
+
+<p>支持中文的文档类 <code>ctexart</code> / <code>ctexbook</code> / <code>ctexrep</code> 分别与英文中的 <code>article</code>, <code>book</code>, <code>report</code> 对应，可根据需求自行选择。</p>
+<h2 id="设置字体和字号"><a href="#设置字体和字号" class="headerlink" title="设置字体和字号"></a>设置字体和字号</h2><p>设置字体和字号下面的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">% 字体</span><br><span class="line">\setmainfont&#123;Times New Roman&#125;</span><br><span class="line">\setCJKmainfont&#123;宋体&#125;</span><br><span class="line">% 字号</span><br><span class="line">\zihao&#123;-4&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>\setmainfont</code> 设置的是英文的默认字体，<code>\setCJKmainfont</code>设置的是中文的默认字体。<br><code>\zihao</code> 可以设置字号，后面的数字 4 对应四号字，-4 对应小四，以此类推。</p>
+<h2 id="中文粗体和斜体"><a href="#中文粗体和斜体" class="headerlink" title="中文粗体和斜体"></a>中文粗体和斜体</h2><p>在中文字体中，本身是不存在粗体和斜体的概念的，比如宋体，我们只能在系统中找到宋体字，却找不到宋体-粗体这一种字体。而 $\LaTeX$ 在使用粗体时，会在系统字体中寻找粗体字体，如果找不到最终会使用宋体的原始字体。这就使本应是粗体显示的部分（如标题）无法正常显示。<br>对于这一问题，有两种解决方案。</p>
+<ul>
+<li>使用有粗体和斜体的中文字体，这种字体很难找。。。</li>
+<li>用其他字体代替粗体和斜体，形如：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\setCJKmainfont[BoldFont=&#123;黑体&#125;, ItalicFont=&#123;楷体&#125;]&#123;宋体&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="各种距离设置"><a href="#各种距离设置" class="headerlink" title="各种距离设置"></a>各种距离设置</h1><h2 id="行距"><a href="#行距" class="headerlink" title="行距"></a>行距</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\linespread&#123;⟨factor⟩&#125;</span><br></pre></td></tr></table></figure>
+<p>其中 <code>⟨factor⟩</code> 作用于基础行距而不是字号。缺省的基础行距是 1.2 倍字号大小，因此使用 \linespread{1.5} 意味着最终行距为 1.8 倍的字号大小。</p>
+<h2 id="首行缩进"><a href="#首行缩进" class="headerlink" title="首行缩进"></a>首行缩进</h2><p>以下长度分别为段落的左缩进、右缩进和首行缩进:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\setlength&#123;\leftskip&#125;&#123;⟨length⟩&#125;</span><br><span class="line">\setlength&#123;\rightskip&#125;&#123;⟨length⟩&#125;</span><br><span class="line">\setlength&#123;\parindent&#125;&#123;⟨length⟩&#125;</span><br></pre></td></tr></table></figure>
+<p>它们和设置行距的命令一样,在分段时生效。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\indent</span><br><span class="line">\noindent</span><br></pre></td></tr></table></figure>
+<p>$\LaTeX$ 默认在段落开始时缩进，长度为用上述命令设置的 <code>\parindent</code>。如果你在某一段不想使用缩进，可使用某一段开头使用 <code>\noindent</code> 命令。相反地，<code>\indent</code> 命令强制开启一段首行缩进的段落。多个 <code>\indent</code> 命令可以累加缩进量。<br>$\LaTeX$ 还默认在 <code>\chapter</code>、<code>\section</code> 等章节标题命令之后的第一段不缩进。如果不习惯这种设定，可以调用 <code>indentfirst</code> 宏包，令第一段的首行缩进照常。</p>
+<h2 id="页面边距"><a href="#页面边距" class="headerlink" title="页面边距"></a>页面边距</h2><p>设置页边距要用到宏包 <code>geometry</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\usepackage&#123;geometry&#125;</span><br><span class="line">\geometry&#123;top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="交叉引用"><a href="#交叉引用" class="headerlink" title="交叉引用"></a>交叉引用</h1><p>交叉引用由 <code>\label</code> 和 <code>\ref</code> 两个命令构成，使用方式如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexart&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    a = \sqrt&#123;b^2&#125;</span><br><span class="line">    \label&#123;math_1&#125;</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">这里引用公式\ref&#123;math_1&#125;</span><br><span class="line"></span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+<p>结果为</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/label_ref.png" alt="label_ref"></p>
+<p>这样做的好处是，当公式（或图片、定理等可以使用交叉引用的环境）编号改变时，你无需关心其引用需要修改。</p>
+<blockquote>
+<p>注意，使用交叉引用时，需要进行两次编译。</p>
+</blockquote>
+<h2 id="改变引用文字字体（以链接形式显示）"><a href="#改变引用文字字体（以链接形式显示）" class="headerlink" title="改变引用文字字体（以链接形式显示）"></a>改变引用文字字体（以链接形式显示）</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\usepackage[colorlinks,linkcolor=red,anchorcolor=blue,citecolor=green]&#123;hyperref&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="列表"><a href="#列表" class="headerlink" title="列表"></a>列表</h1><h2 id="三种不同的列表"><a href="#三种不同的列表" class="headerlink" title="三种不同的列表"></a>三种不同的列表</h2><ul>
+<li>有序列表 <code>enumerate</code></li>
+<li>无序列表 <code>itemize</code></li>
+<li>关键字列表 <code>description</code></li>
+</ul>
+<p>三种列表环境有不同的使用场景，并且支持相互嵌套，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexart&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;enumerate&#125;</span><br><span class="line">    \item 有序列表</span><br><span class="line">        \begin&#123;enumerate&#125;</span><br><span class="line">            \item 第一项</span><br><span class="line">            \item 第二项</span><br><span class="line">            \item 第三项</span><br><span class="line">        \end&#123;enumerate&#125;</span><br><span class="line">    \item 无序列表</span><br><span class="line">        \begin&#123;itemize&#125;</span><br><span class="line">            \item 第一项</span><br><span class="line">            \item 第二项</span><br><span class="line">            \item 第三项</span><br><span class="line">        \end&#123;itemize&#125;</span><br><span class="line">    \item 关键字列表</span><br><span class="line">        \begin&#123;description&#125;</span><br><span class="line">            \item&#123;一&#125; 第一项</span><br><span class="line">            \item&#123;二&#125; 第二项</span><br><span class="line">            \item&#123;三&#125; 第三项</span><br><span class="line">        \end&#123;description&#125;</span><br><span class="line">\end&#123;enumerate&#125;</span><br><span class="line"></span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/enumerate.png" alt="enumerate"></p>
+<h2 id="列表间距"><a href="#列表间距" class="headerlink" title="列表间距"></a>列表间距</h2><p>$\LaTeX$ 默认的列表间距过大，可使用 <code>enumitem</code> 宏包进行调整</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\usepackage&#123;enumitem&#125;</span><br><span class="line">\setenumerate[1]&#123;itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt&#125;</span><br><span class="line">\setitemize[1]&#123;itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt&#125;</span><br><span class="line">\setdescription&#123;itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="数学公式"><a href="#数学公式" class="headerlink" title="数学公式"></a>数学公式</h1><h2 id="AMS宏集"><a href="#AMS宏集" class="headerlink" title="AMS宏集"></a>AMS宏集</h2><p>AMS 宏集合是美国数学学会 (American Mathematical Society) 提供的对 $\LaTeX$ 原生的数学公式排版的扩展,其核心是 <code>amsmath</code> 宏包，对多行公式的排版提供了有力的支持。此外,<code>amsfonts</code> 宏包以及基于它的 <code>amssymb</code> 宏包提供了丰富的数学符号;<code>amsthm</code> 宏包扩展了 $\LaTeX$ 定理证明格式。</p>
+<h2 id="行内公式与行间公式"><a href="#行内公式与行间公式" class="headerlink" title="行内公式与行间公式"></a>行内公式与行间公式</h2><p>数学公式有两种排版方式：其一是与文字混排，称为<strong>行内公式</strong>；其二是单独列为一行排版，称为<strong>行间公式</strong>。</p>
+<ul>
+<li>行内公式使用一对 <code>$</code> 符号包裹</li>
+<li>行间公式由 <code>equation</code> 环境包裹</li>
+</ul>
+<h2 id="公式编号"><a href="#公式编号" class="headerlink" title="公式编号"></a>公式编号</h2><ul>
+<li><code>equation</code> 环境会为公式自动生成一个编号；</li>
+<li>这个编号可以用 <code>\label</code> 和 <code>\ref</code> 生成交叉引用；</li>
+<li><code>amsmath</code> 的 <code>\eqref</code> 命令甚至为引用自动加上圆括号；</li>
+<li><code>\tag</code> 命令可以手动修改公式的编号，<code>\notag</code>取消为公式编号；</li>
+<li>如果要直接生成不带编号的行间公式，可用 <code>\[</code> 和 <code>\]</code>包裹，或者使用 <code>equation*</code> 环境。</li>
+</ul>
+<p>下面是一个这些命令和环境的使用案例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexart&#125;</span><br><span class="line"></span><br><span class="line">\usepackage&#123;amsmath&#125;</span><br><span class="line">\usepackage&#123;amsfonts&#125;</span><br><span class="line">\usepackage&#123;amssymb&#125;</span><br><span class="line">\usepackage&#123;amsthm&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界&#125;</span><br><span class="line"></span><br><span class="line">首先，先来一个行内公式：$x^2+y^2 = 0$,它在文字中间</span><br><span class="line"></span><br><span class="line">下面是一个行间公式：</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    x^2+y^2 = 0</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">下面用 tag 命令修改编号为 aaa</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    x^2+y^2 = 0 \tag&#123;aaa&#125;</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">下面的行间公式没有编号，使用了 notag 命令</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    x^2+y^2 = 0 \notag</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">下面的行间公式没有编号</span><br><span class="line">\[</span><br><span class="line">    x^2+y^2 = 0</span><br><span class="line">\]</span><br><span class="line"></span><br><span class="line">最后看一下自动编号的结果，发现 notag 和 直接使用无编号环境都不会计数。</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    x^2+y^2 = 0</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/equation_1.png" alt="数学公式示例1"></p>
+<h2 id="多行公式"><a href="#多行公式" class="headerlink" title="多行公式"></a>多行公式</h2><p>使用 <code>align</code> 环境可以实现多行公式，它将公式用 <code>&amp;</code> 隔为两部分并对齐，它会为每一行公式独立编号。<br>若要生成共用编号的多行公式，最方便的是用 <code>equation</code> 嵌套 <code>aligned</code> 环境的方式。<br>示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexart&#125;</span><br><span class="line"></span><br><span class="line">\usepackage&#123;amsmath&#125;</span><br><span class="line">\usepackage&#123;amsfonts&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界&#125;</span><br><span class="line"></span><br><span class="line">\subsection&#123;align&#125;</span><br><span class="line">\begin&#123;align&#125;</span><br><span class="line">    a &amp;= b+c+d \\</span><br><span class="line">    &amp;= x+y+z</span><br><span class="line">\end&#123;align&#125;</span><br><span class="line"></span><br><span class="line">\subsection&#123;equation嵌套aligned&#125;</span><br><span class="line">\begin&#123;equation&#125;</span><br><span class="line">    \begin&#123;aligned&#125;</span><br><span class="line">        a &amp;= b+c+d \\</span><br><span class="line">          &amp;= x+y+z</span><br><span class="line">    \end&#123;aligned&#125;</span><br><span class="line">\end&#123;equation&#125;</span><br><span class="line"></span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/equation_2.png" alt="数学公式示例2"></p>
+<h1 id="定理环境"><a href="#定理环境" class="headerlink" title="定理环境"></a>定理环境</h1><h2 id="LaTeX-原始定理环境"><a href="#LaTeX-原始定理环境" class="headerlink" title="$\LaTeX$ 原始定理环境"></a>$\LaTeX$ 原始定理环境</h2><p>使用 $\LaTeX$ 排版数学和其他科技文档时，会接触到大量的定理、证明等内容。$\LaTeX$ 提供了一个基本的命令 <code>\newtheorem</code> 提供定理环境的定义:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">\newtheorem&#123;⟨theorem environment⟩&#125;&#123;⟨title⟩&#125;[⟨section-level⟩]</span><br><span class="line">\newtheorem&#123;⟨theorem environment⟩&#125;[⟨counter⟩]&#123;⟨title⟩&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>⟨theorem environment⟩</code> 为定理环境的名称。原始的 $\LaTeX$ 里<strong>没有现成的定理环境</strong>，不加定义而直接使用很可能会出错。</li>
+<li><code>⟨title⟩</code> 是定理环境的标题(“定理”,“公理”等)。</li>
+<li><code>⟨section-level⟩</code> 和 <code>⟨counter⟩</code> 用于指定定理的编号方式，<strong>二者不可同时使用</strong><ul>
+<li><code>⟨section level⟩</code> 为章节级别,如 <code>chapter</code>、<code>section</code> 等，定理序号成为章节的下一级序号;</li>
+<li><code>⟨counter⟩</code> 为用 \newcounter 自定义的计数器名称(在此不做详述，大多数情况下使用<code>⟨section level⟩</code>即可满足需求)</li>
+</ul>
+</li>
+</ul>
+<h2 id="自定义定理环境样式"><a href="#自定义定理环境样式" class="headerlink" title="自定义定理环境样式"></a>自定义定理环境样式</h2><p><code>amsthm</code> 提供了 <code>\theoremstyle</code> 命令支持定理格式的切换,在用 <code>\newtheorem</code> 命令定义定理环境之前使用。<br><code>amsthm</code> 预定义了三种格式<code>\theoremstyle:</code></p>
+<ul>
+<li><code>plain</code> 和 $\LaTeX$ 原始的格式一致；</li>
+<li><code>definition</code> 使用粗体标签、正体内容；</li>
+<li><code>remark</code> 使用斜体标签、正体内容。</li>
+</ul>
+<p>另外 <code>amsthm</code> 还支持用带星号的 <code>\newtheorem*</code> 定义不带序号的定理环境:<br>更进一步的，还可以使用 <code>\newtheoremstyle</code> 命令自定义定理格式。</p>
+<p>下面给出一个使用定理环境的示例</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">\documentclass[UTF8]&#123;ctexart&#125;</span><br><span class="line"></span><br><span class="line">\usepackage&#123;amsthm&#125;</span><br><span class="line"></span><br><span class="line">% 定理环境</span><br><span class="line">\newtheoremstyle&#123;mythesty&#125;% name of the style to be used</span><br><span class="line">&#123;5pt&#125;% measure of space to leave above the theorem. E.g.: 3pt</span><br><span class="line">&#123;5pt&#125;% measure of space to leave below the theorem. E.g.: 3pt</span><br><span class="line">&#123;\it&#125;% name of font to use in the body of the theorem</span><br><span class="line">&#123;&#125;% measure of space to indent</span><br><span class="line">&#123;\bf&#125;% name of head font</span><br><span class="line">&#123;\\&#125;% punctuation between head and body</span><br><span class="line">&#123; &#125;% space after theorem head; &quot; &quot; = normal interword space</span><br><span class="line">&#123;&#125;</span><br><span class="line">\theoremstyle&#123;mythesty&#125;</span><br><span class="line">\newtheorem&#123;example&#125;&#123;例&#125;[section]</span><br><span class="line">\theoremstyle&#123;plain&#125; </span><br><span class="line">\newtheorem&#123;codelist&#125;&#123;代码清单&#125;[section]</span><br><span class="line"></span><br><span class="line">\begin&#123;document&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;example&#125;</span><br><span class="line">    这是一个例题</span><br><span class="line">\end&#123;example&#125;</span><br><span class="line"></span><br><span class="line">\section&#123;你好世界2&#125;</span><br><span class="line"></span><br><span class="line">\begin&#123;codelist&#125;</span><br><span class="line">    这是一个代码清单</span><br><span class="line">    \begin&#123;verbatim&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">    printf(&quot;Hello World\n&quot;);</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br><span class="line">    \end&#123;verbatim&#125;</span><br><span class="line">\end&#123;codelist&#125;</span><br><span class="line"></span><br><span class="line">\end&#123;document&#125;</span><br></pre></td></tr></table></figure>
+<p>结果为</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200213-LatexNote/theorem.png" alt="定理环境"></p>
+<blockquote>
+<p>本文参考书籍 《一份(不太)简短的 $\LaTeX$ $2_\epsilon$介绍》<br>英文作者: Tobias Oetiker Hubert Partl, Irene Hyna and Elisabeth Schlegl<br>英文版本: Version 6.2, Februrary 28, 2018<br>中文翻译: CTEX 开发小组<br>中文版本: 版本 6.01,二零一九年四月</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Latex/" rel="tag"># Latex</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/10d91204edcc" rel="prev" title="树莓派交叉开发环境的搭建">
+                  <i class="fa fa-chevron-left"></i> 树莓派交叉开发环境的搭建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/1fe7a0c955f0" rel="next" title="用Busybox制作Linux最小根文件系统">
+                  用Busybox制作Linux最小根文件系统 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"e3329a2bf5766a1689f1ca754cb6deaa"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="最近在做一个微信小程序的项目，中间遇到一个需求，需要用一个顶部的导航栏显示商品分类，点击可以切换下方的商品列表，下方商品列表也可以滑动翻页">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信小程序-导航栏+滑动翻页">
+<meta property="og:url" content="https://renshengjihe.cn/5e9d6e4be9e8">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="最近在做一个微信小程序的项目，中间遇到一个需求，需要用一个顶部的导航栏显示商品分类，点击可以切换下方的商品列表，下方商品列表也可以滑动翻页">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/191109-WechatNavtabSwiper/%E6%95%88%E6%9E%9C%E5%9B%BE.gif">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/191109-WechatNavtabSwiper/%E5%88%86%E6%9E%90.png">
+<meta property="article:published_time" content="2019-11-09T14:25:25.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.989Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="微信小程序">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/191109-WechatNavtabSwiper/%E6%95%88%E6%9E%9C%E5%9B%BE.gif">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/5e9d6e4be9e8.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/5e9d6e4be9e8","path":"5e9d6e4be9e8.html","title":"微信小程序-导航栏+滑动翻页"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>微信小程序-导航栏+滑动翻页 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%88%E6%9E%9C"><span class="nav-number">1.</span> <span class="nav-text">效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%87%A0%E4%B8%AA%E8%A6%81%E7%82%B9"><span class="nav-number">2.1.</span> <span class="nav-text">实现的几个要点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%95%8C%E9%9D%A2%E4%B8%AD%E5%90%84%E4%B8%AA%E5%85%83%E7%B4%A0%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E7%BB%84%E4%BB%B6%E5%A6%82%E4%B8%8B%E5%9B%BE%E6%89%80%E7%A4%BA"><span class="nav-number">2.2.</span> <span class="nav-text">界面中各个元素所使用的组件如下图所示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#index-wxml"><span class="nav-number">3.1.</span> <span class="nav-text">index.wxml</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#index-wxss"><span class="nav-number">3.2.</span> <span class="nav-text">index.wxss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#index-js"><span class="nav-number">3.3.</span> <span class="nav-text">index.js</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/5e9d6e4be9e8">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微信小程序-导航栏+滑动翻页
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-11-09 22:25:25" itemprop="dateCreated datePublished" datetime="2019-11-09T22:25:25+08:00">2019-11-09</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" itemprop="url" rel="index"><span itemprop="name">微信小程序</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">最近在做一个微信小程序的项目，中间遇到一个需求，需要用一个顶部的导航栏显示商品分类，点击可以切换下方的商品列表，下方商品列表也可以滑动翻页</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>最近在做一个微信小程序的项目，中间遇到一个需求，需要用一个顶部的导航栏显示商品分类，点击可以切换下方的商品列表，下方商品列表也可以滑动翻页</p>
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/191109-WechatNavtabSwiper/%E6%95%88%E6%9E%9C%E5%9B%BE.gif" alt="效果图"></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><h3 id="实现的几个要点"><a href="#实现的几个要点" class="headerlink" title="实现的几个要点"></a>实现的几个要点</h3><ul>
+<li>用<code>scroll-view &gt; view</code>来做导航栏</li>
+<li>用<code>swiper &gt; swiper-item &gt; scroll-view &gt; view</code>的方式来做下方显示内容的区域</li>
+<li>用<code>js</code>动态控制导航栏的滚动位置，使选中项居中显示</li>
+<li>根据屏幕大小调整<code>swiper</code>的大小，使页面不会滚动，但下方的<code>scroll-view</code>会滚动</li>
+<li>通过对上方<code>scroll-view</code>和下方<code>swiper</code>响应事件的处理来实现翻页功能</li>
+</ul>
+<h3 id="界面中各个元素所使用的组件如下图所示"><a href="#界面中各个元素所使用的组件如下图所示" class="headerlink" title="界面中各个元素所使用的组件如下图所示"></a>界面中各个元素所使用的组件如下图所示</h3><p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/191109-WechatNavtabSwiper/%E5%88%86%E6%9E%90.png" alt="分析"></p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><h3 id="index-wxml"><a href="#index-wxml" class="headerlink" title="index.wxml"></a>index.wxml</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">view</span> <span class="attr">class</span>=<span class="string">&quot;container&quot;</span> <span class="attr">enable-flex</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 导航栏 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scroll-view</span> <span class="attr">class</span>=<span class="string">&quot;navbar&quot;</span> <span class="attr">scroll-x</span>=<span class="string">&quot;true&quot;</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">scroll-left</span>=<span class="string">&quot;&#123;&#123;scrollLeft&#125;&#125;&quot;</span> <span class="attr">scroll-with-animation</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">view</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">wx:for</span>=<span class="string">&quot;&#123;&#123;navbarItem&#125;&#125;&quot;</span> <span class="attr">wx:key</span>=<span class="string">&quot;&#123;&#123;index&#125;&#125;&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">class</span>=<span class="string">&quot;navbar-item &#123;&#123;current==index ? &#x27;navbar-item-active&#x27; : &#x27;&#x27;&#125;&#125;&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">data-navbarindex</span>=<span class="string">&quot;&#123;&#123;index&#125;&#125;&quot;</span> <span class="attr">bindtap</span>=<span class="string">&quot;onNavBarTap&quot;</span>&gt;</span></span><br><span class="line">      &#123;&#123;item&#125;&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">scroll-view</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 列表 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">swiper</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">class</span>=<span class="string">&quot;swiper-box&quot;</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">bindchange</span>=<span class="string">&quot;onSwiperChange&quot;</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">duration</span>=<span class="string">&quot;300&quot;</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">current</span>=<span class="string">&quot;&#123;&#123;current&#125;&#125;&quot;</span> </span></span><br><span class="line"><span class="tag">  <span class="attr">style</span>=<span class="string">&quot;height: &#123;&#123;winHeight-150&#125;&#125;rpx;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">swiper-item</span> <span class="attr">class</span>=<span class="string">&quot;list&quot;</span> <span class="attr">wx:for</span>=<span class="string">&quot;&#123;&#123;navbarItem&#125;&#125;&quot;</span> <span class="attr">wx:key</span>=<span class="string">&quot;index&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">scroll-view</span> <span class="attr">class</span>=<span class="string">&quot;list&quot;</span> <span class="attr">scroll-y</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">view</span> <span class="attr">class</span>=<span class="string">&quot;list-item&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">text</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">view</span> <span class="attr">class</span>=<span class="string">&quot;list-item&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">text</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">view</span> <span class="attr">class</span>=<span class="string">&quot;list-item&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">text</span>&gt;</span>&#123;&#123;item&#125;&#125;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">scroll-view</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">swiper-item</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">swiper</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">view</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="index-wxss"><a href="#index-wxss" class="headerlink" title="index.wxss"></a>index.wxss</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">page &#123;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#efefef</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: flex;</span><br><span class="line">  <span class="attribute">flex-direction</span>: column;</span><br><span class="line">  <span class="attribute">align-items</span>: left;</span><br><span class="line">  <span class="attribute">box-sizing</span>: border-box;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 导航栏 */</span></span><br><span class="line"><span class="selector-class">.navbar</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">50</span>rpx;</span><br><span class="line">  <span class="attribute">background-color</span>: <span class="number">#fff</span>;</span><br><span class="line">  <span class="attribute">white-space</span>:nowrap;</span><br><span class="line">  <span class="attribute">font-size</span>: <span class="number">36</span>rpx;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.navbar-item</span> &#123;</span><br><span class="line">  <span class="attribute">padding</span>: <span class="number">0</span>rpx <span class="number">20</span>rpx;</span><br><span class="line">  <span class="attribute">display</span>: inline;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.navbar-item-active</span> &#123;</span><br><span class="line">  <span class="attribute">color</span>: <span class="number">#0080ff</span>;</span><br><span class="line">  <span class="attribute">border-bottom</span>: <span class="number">1px</span> solid <span class="number">#0080ff</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 内容列表 */</span></span><br><span class="line"><span class="selector-class">.swiper-box</span> &#123;</span><br><span class="line">  <span class="attribute">display</span>: block;</span><br><span class="line">  <span class="attribute">margin-top</span>: <span class="number">5</span>rpx;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.list</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.list-item</span> &#123;</span><br><span class="line">  <span class="attribute">height</span>: <span class="number">600</span>rpx;</span><br><span class="line">  <span class="attribute">background-color</span>: pink;</span><br><span class="line">  <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="index-js"><a href="#index-js" class="headerlink" title="index.js"></a>index.js</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> app = getApp()</span><br><span class="line"></span><br><span class="line">Page(&#123;</span><br><span class="line">  <span class="attr">data</span>: &#123;</span><br><span class="line">    <span class="attr">navbarItem</span>: &#123;</span><br><span class="line">      <span class="number">0</span>: <span class="string">&quot;类型0&quot;</span>,</span><br><span class="line">      <span class="number">1</span>: <span class="string">&quot;类型1&quot;</span>,</span><br><span class="line">      <span class="number">2</span>: <span class="string">&quot;类型2&quot;</span>,</span><br><span class="line">      <span class="number">3</span>: <span class="string">&quot;类型3&quot;</span>,</span><br><span class="line">      <span class="number">4</span>: <span class="string">&quot;类型4&quot;</span>,</span><br><span class="line">      <span class="number">5</span>: <span class="string">&quot;类型5&quot;</span>,</span><br><span class="line">      <span class="number">6</span>: <span class="string">&quot;类型6&quot;</span>,</span><br><span class="line">      <span class="number">7</span>: <span class="string">&quot;类型7&quot;</span>,</span><br><span class="line">      <span class="number">8</span>: <span class="string">&quot;类型8&quot;</span>,</span><br><span class="line">      <span class="number">9</span>: <span class="string">&quot;类型9&quot;</span>,</span><br><span class="line">      <span class="number">10</span>: <span class="string">&quot;类型10&quot;</span>,</span><br><span class="line">      <span class="number">11</span>: <span class="string">&quot;类型11&quot;</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">current</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">winHeight</span>: <span class="number">0</span>,    <span class="comment">// 窗口高度</span></span><br><span class="line">    <span class="attr">scrollLeft</span>: <span class="number">0</span>,   <span class="comment">// 距离左边的距离</span></span><br><span class="line">    <span class="attr">winWidth</span>: <span class="number">0</span>,     <span class="comment">// 屏幕的宽</span></span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="attr">onLoad</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> that = <span class="built_in">this</span>;</span><br><span class="line">    wx.getSystemInfo(&#123;</span><br><span class="line">      <span class="attr">success</span>: <span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> clientHeight = res.windowHeight,</span><br><span class="line">          clientWidth = res.windowWidth,</span><br><span class="line">          rpxR = <span class="number">750</span> / clientWidth;</span><br><span class="line">        <span class="keyword">var</span> calc = clientHeight * rpxR;</span><br><span class="line">        that.setData(&#123;</span><br><span class="line">          <span class="attr">winHeight</span>: calc,</span><br><span class="line">          <span class="attr">winWidth</span>: clientWidth</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 点击切换当前分类</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="attr">onNavBarTap</span>: <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> current = e.currentTarget.dataset.navbarindex;</span><br><span class="line">    <span class="built_in">this</span>.setData(&#123;</span><br><span class="line">      <span class="attr">current</span>: current</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">this</span>.adjustNavbar();</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 滑动切换当前分类</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="attr">onSwiperChange</span>: <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">this</span>.setData(&#123;</span><br><span class="line">      <span class="attr">current</span>: e.detail.current</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="built_in">this</span>.adjustNavbar();</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 调整 navbar 选中项的位置</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="attr">adjustNavbar</span>: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> self = <span class="built_in">this</span>;</span><br><span class="line">    <span class="keyword">const</span> query = wx.createSelectorQuery()</span><br><span class="line">    query.selectAll(<span class="string">&quot;.navbar-item&quot;</span>).boundingClientRect();</span><br><span class="line">    query.exec(<span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> num = <span class="number">0</span>;</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; self.data.current; i++) &#123;</span><br><span class="line">        num += res[<span class="number">0</span>][i].width</span><br><span class="line">      &#125;</span><br><span class="line">      self.setData(&#123;</span><br><span class="line">        <span class="attr">scrollLeft</span>: <span class="built_in">Math</span>.ceil(num - <span class="number">100</span>)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F/" rel="tag"># 微信小程序</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/ebe9a8ef2151" rel="prev" title="FTP主动模式与被动模式">
+                  <i class="fa fa-chevron-left"></i> FTP主动模式与被动模式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/aa10dbf69217" rel="next" title="把系统从 deepin 重装成 ubuntu">
+                  把系统从 deepin 重装成 ubuntu <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"37300d5efed3d02cac77d791b59ae342"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

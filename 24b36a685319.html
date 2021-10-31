@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="本文总结了 C&#x2F;C++ 中动态内存分配的方法，malloc \ free \ calloc 函数的用法，new delete 的用法及其与 C 语言中函数的区别，operator new \ placement new \ operator delete 的原理与使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++动态内存管理">
+<meta property="og:url" content="https://renshengjihe.cn/24b36a685319">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="本文总结了 C&#x2F;C++ 中动态内存分配的方法，malloc \ free \ calloc 函数的用法，new delete 的用法及其与 C 语言中函数的区别，operator new \ placement new \ operator delete 的原理与使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-04T01:57:23.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.989Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/24b36a685319.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/24b36a685319","path":"24b36a685319.html","title":"C/C++动态内存管理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C/C++动态内存管理 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc-free-calloc-realloc"><span class="nav-number">1.</span> <span class="nav-text">malloc \ free \ calloc \ realloc</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#malloc"><span class="nav-number">1.1.</span> <span class="nav-text">malloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#free"><span class="nav-number">1.2.</span> <span class="nav-text">free</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#calloc"><span class="nav-number">1.3.</span> <span class="nav-text">calloc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#realloc"><span class="nav-number">1.4.</span> <span class="nav-text">realloc</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-delete"><span class="nav-number">2.</span> <span class="nav-text">new \ delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">两种方式的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#operator-new-placement-new-operator-delete"><span class="nav-number">4.</span> <span class="nav-text">operator new \ placement new \ operator delete</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#operator-new"><span class="nav-number">4.1.</span> <span class="nav-text">operator new</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#placement-new"><span class="nav-number">4.2.</span> <span class="nav-text">placement new</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#operator-delete"><span class="nav-number">4.3.</span> <span class="nav-text">operator delete</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/24b36a685319">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C/C++动态内存管理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-08-04 09:57:23" itemprop="dateCreated datePublished" datetime="2019-08-04T09:57:23+08:00">2019-08-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">本文总结了 C/C++ 中动态内存分配的方法，malloc \ free \ calloc 函数的用法，new delete 的用法及其与 C 语言中函数的区别，operator new \ placement new \ operator delete 的原理与使用</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>在 C 和 C++ 中，对于动态内存的管理是一个永恒的话题，C语言采用 x(x)alloc 和 free 来开辟和释放动态内存空间，不同的是，C++ 引入了 new 和 delete 操作符作为新的方式。这二者有什么区别呢？new \ delete 又有哪些高级用法，这些都将在下文一一列出。</p>
+<h2 id="malloc-free-calloc-realloc"><a href="#malloc-free-calloc-realloc" class="headerlink" title="malloc \ free \ calloc \ realloc"></a>malloc \ free \ calloc \ realloc</h2><h3 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">malloc</span><span class="params">(<span class="keyword">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>开辟一段 size 字节大小的内存空间，并将空间的首地址返回，如果  size 为 0 ,则返回空指针。</p>
+<h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">free</span><span class="params">(<span class="keyword">void</span>* p)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>释放一段指针指向的内存空间。</p>
+<h3 id="calloc"><a href="#calloc" class="headerlink" title="calloc"></a>calloc</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">calloc</span><span class="params">(<span class="keyword">size_t</span> nmemb, <span class="keyword">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>开辟一段连续的内存空间，它的大小为 nmemb * size 字节，并为每一块内存地址赋 0，它实际上依然调用了 malloc 只是在 malloc 的基础上进行了额外的操作。</p>
+<h3 id="realloc"><a href="#realloc" class="headerlink" title="realloc"></a>realloc</h3><p>函数原型</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">realloc</span><span class="params">(<span class="keyword">void</span>* ptr, <span class="keyword">size_t</span> size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>重新开辟一段内存空间，将传入的指针 ptr 所指地址的空间调整至 size 大小。如果 size 比原来的空间大，会在另一个地址处开辟一段新的空间，而 ptr 所指的空间被释放；否则，返回的地址仍然是原先的地址，只是合法空间的大小经过了调整。不过即使 realloc 可能返回与 ptr 相同的首地址，但大多数情况下仍然要以下面的方式来使用 realloc 从而避免多次释放的问题。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span>*)<span class="built_in">malloc</span>(<span class="number">5</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line">    p = <span class="built_in">realloc</span>(p, <span class="number">10</span>*<span class="keyword">sizeof</span>(<span class="keyword">int</span>));     <span class="comment">// 传入参数 p 的地址在 realloc 中已经被释放</span></span><br><span class="line">    <span class="built_in">free</span>(p);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="new-delete"><a href="#new-delete" class="headerlink" title="new \ delete"></a>new \ delete</h2><p>new 和 delete 是 C++ 中新增的动态内存管理的两个运算符，下面是 new 和 delete 的用例。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p1 = <span class="keyword">new</span> <span class="built_in"><span class="keyword">int</span></span>(<span class="number">0</span>);   <span class="comment">// 一个整形空间，初始化为 0</span></span><br><span class="line">    <span class="keyword">int</span> *p2 = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">5</span>];   <span class="comment">// 五个整形空间</span></span><br><span class="line">    <span class="keyword">delete</span> p1;              <span class="comment">// 释放单个空间</span></span><br><span class="line">    <span class="keyword">delete</span>[] p2;            <span class="comment">// 释放连续空间</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="两种方式的区别"><a href="#两种方式的区别" class="headerlink" title="两种方式的区别"></a>两种方式的区别</h2><p>下表总结了两种方式之间的区别</p>
+<table>
+<thead>
+<tr>
+<th align="right">特征</th>
+<th align="left">new \ delete</th>
+<th align="left">malloc \ free</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">分配内存的位置</td>
+<td align="left">自由存储区</td>
+<td align="left">堆区</td>
+<td align="left">new 和 delete 可以重载，分配到那个存储区取决于具体实现。</td>
+</tr>
+<tr>
+<td align="right">返回指针的类型</td>
+<td align="left">完整的类型</td>
+<td align="left">void*</td>
+<td align="left">new 开辟出的内存空间不用像 malloc 那样做类型转换，使用起来更方便</td>
+</tr>
+<tr>
+<td align="right">分配失败的处理</td>
+<td align="left">抛出异常</td>
+<td align="left">返回NULL</td>
+<td align="left">抛出异常处理起来更加灵活</td>
+</tr>
+<tr>
+<td align="right">分配内存的大小</td>
+<td align="left">由编译器根据类型计算</td>
+<td align="left">必须显示指定字节数</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">处理连续空间</td>
+<td align="left">new[]</td>
+<td align="left">必须用户计算数组大小后进行分配</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">已分配内存的扩充</td>
+<td align="left">无法直观地处理</td>
+<td align="left">使用 realloc 完成</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">是否相互调用</td>
+<td align="left">可以，取决于重载的实现</td>
+<td align="left">不可调用 new 和 delete</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">分配内存时内存不足</td>
+<td align="left">无法通过用户代码处理</td>
+<td align="left">能够使用 realloc 函数或重新制定分配器</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">函数重载</td>
+<td align="left">允许</td>
+<td align="left">不允许</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="right">构造与析构</td>
+<td align="left">调用</td>
+<td align="left">不调用</td>
+<td align="left">new 和 delete 为对象开辟/释放空间时会调用对应的构造、析构函数，这在面向对象的程序中极为重要</td>
+</tr>
+</tbody></table>
+<h2 id="operator-new-placement-new-operator-delete"><a href="#operator-new-placement-new-operator-delete" class="headerlink" title="operator new \ placement new \ operator delete"></a>operator new \ placement new \ operator delete</h2><p>上面我们说的 <code>new</code> 运算符是 <code>new operator</code> 而不是 <code>operator new</code></p>
+<p>这两者的区别在于 <code>new operator</code> 的行为是不可以被改变的，它稳定地完成两个任务：</p>
+<ol>
+<li>分配内存（调用的是 <code>operator new</code>）</li>
+<li>调用构造函数初始化</li>
+</ol>
+<p>同样 <code>delete operator</code> 也是一样的道理</p>
+<p>所谓的重载 <code>new</code> 和 <code>delete</code> 其实重载的是 <code>operator new</code> 和 <code>operator delete</code> 而不是 <code>new operator</code> 和 <code>delete operator</code></p>
+<h3 id="operator-new"><a href="#operator-new" class="headerlink" title="operator new"></a>operator new</h3><p>下面是几个 <code>operator new</code> 的原型（定义在 <code>new</code> 文件中）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 普通 operator new 版本，如果内存开辟失败，会抛出异常</span></span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="keyword">operator</span> <span class="title">new</span> <span class="params">(std::<span class="keyword">size_t</span> size)</span> <span class="title">throw</span> <span class="params">(std::bad_alloc)</span></span>; </span><br><span class="line"><span class="keyword">void</span>* <span class="keyword">operator</span> <span class="keyword">new</span>[] (std::<span class="keyword">size_t</span> size) <span class="built_in"><span class="keyword">throw</span></span> (std::bad_alloc); </span><br><span class="line"><span class="comment">// 第二个参数没有实际的传输数据，它的作用在于标识这个函数不会抛出异常</span></span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="keyword">operator</span> <span class="title">new</span> <span class="params">(std::<span class="keyword">size_t</span> size, <span class="keyword">const</span> std::<span class="keyword">nothrow_t</span>&amp; nothrow_constant)</span> <span class="title">throw</span><span class="params">()</span></span>; </span><br><span class="line"><span class="keyword">void</span>* <span class="keyword">operator</span> <span class="keyword">new</span>[] (std::<span class="keyword">size_t</span> size, <span class="keyword">const</span> std::<span class="keyword">nothrow_t</span>&amp; nothrow_constant) <span class="built_in"><span class="keyword">throw</span></span>(); </span><br></pre></td></tr></table></figure>
+<p>如果要使用第二个版本的 <code>operator new</code>，需要在使用 <code>new operator</code>时按下面的方式使用。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = <span class="built_in"><span class="keyword">new</span></span>(std::nothrow) <span class="built_in"><span class="keyword">int</span></span>(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">delete</span> p;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样，我们可以自己重写或者重载 <code>operator new</code>，如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="keyword">size_t</span> size, <span class="keyword">const</span> <span class="keyword">char</span>* str)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;operator new &quot;</span>  &lt;&lt; str &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">malloc</span>(size);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span>* p = <span class="built_in"><span class="keyword">new</span></span>(<span class="string">&quot;hello&quot;</span>) <span class="built_in"><span class="keyword">int</span></span>(<span class="number">3</span>);</span><br><span class="line">    <span class="keyword">delete</span> []p;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序执行结果为：</p>
+<blockquote>
+<p>operator new hello ..</p>
+</blockquote>
+<h3 id="placement-new"><a href="#placement-new" class="headerlink" title="placement new"></a>placement new</h3><p>在 <code>new</code> 文件中，还定义了一个类型的 <code>operaotr new</code>，原型如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Default placement versions of operator new.</span></span><br><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(std::<span class="keyword">size_t</span>, <span class="keyword">void</span>* __p)</span> _GLIBCXX_USE_NOEXCEPT</span></span><br><span class="line"><span class="function"></span>&#123; <span class="keyword">return</span> __p; &#125;</span><br><span class="line"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="keyword">operator</span> <span class="keyword">new</span>[](std::<span class="keyword">size_t</span>, <span class="keyword">void</span>* __p) _GLIBCXX_USE_NOEXCEPT</span><br><span class="line">&#123; <span class="keyword">return</span> __p; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这便是 <code>placement new</code>，它的作用在于在一个已经分配的内存空间上构造一个对象，其语法如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> a[<span class="number">4</span>] = &#123;<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>&#125;;</span><br><span class="line">    cout &lt;&lt; hex &lt;&lt; &amp;a &lt;&lt; dec &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">int</span> *p = <span class="built_in"><span class="keyword">new</span></span>(&amp;a) <span class="keyword">int</span>;</span><br><span class="line">    cout &lt;&lt; hex &lt;&lt; p &lt;&lt; dec &lt;&lt; endl;</span><br><span class="line">    cout &lt;&lt; *p &lt;&lt; endl;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>程序执行结果为：</p>
+<blockquote>
+<p>0x7ffd738daa24<br>0x7ffd738daa24<br>257</p>
+</blockquote>
+<h3 id="operator-delete"><a href="#operator-delete" class="headerlink" title="operator delete"></a>operator delete</h3><p>同样，<code>operator delete</code> 也可以像 <code>operator new</code> 那样进行重载操作，如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span>* ptr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;operator delete&quot;</span> &lt;&lt; endl;</span><br><span class="line">    <span class="built_in">free</span>(ptr);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line">    <span class="built_in"><span class="keyword">delete</span></span>(p);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果为：</p>
+<blockquote>
+<p>operator delete</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/186533953c0c" rel="prev" title="设计模式-装饰模式(Decorator)">
+                  <i class="fa fa-chevron-left"></i> 设计模式-装饰模式(Decorator)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/64e7062a60ef" rel="next" title="设计模式-桥模式(Bridge)">
+                  设计模式-桥模式(Bridge) <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"7919f53b4d36b959257b0127373857d3"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

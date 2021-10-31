@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="通过一个简单的实例，描述了设计模式中观察者模式的使用场景和使用方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="设计模式-观察者模式（Observer）">
+<meta property="og:url" content="https://renshengjihe.cn/341be92413f7">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="通过一个简单的实例，描述了设计模式中观察者模式的使用场景和使用方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190730-DesignPatternObserver/Observer.png">
+<meta property="article:published_time" content="2019-07-30T02:38:30.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190730-DesignPatternObserver/Observer.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/341be92413f7.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/341be92413f7","path":"341be92413f7.html","title":"设计模式-观察者模式（Observer）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>设计模式-观察者模式（Observer） | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%90%E5%87%BA"><span class="nav-number">1.</span> <span class="nav-text">问题提出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-0-%E7%89%88%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">1.0 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-0-%E7%89%88%E6%9C%AC"><span class="nav-number">3.</span> <span class="nav-text">2.0 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-0-%E7%89%88%E6%9C%AC"><span class="nav-number">4.</span> <span class="nav-text">3.0 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-0-%E7%89%88%E6%9C%AC"><span class="nav-number">5.</span> <span class="nav-text">4.0 版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/341be92413f7">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          设计模式-观察者模式（Observer）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-30 10:38:30" itemprop="dateCreated datePublished" datetime="2019-07-30T10:38:30+08:00">2019-07-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">通过一个简单的实例，描述了设计模式中观察者模式的使用场景和使用方法</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <blockquote>
+<p>Observer 模式要解决的问题为：建立一个一(Subject)对多(Observer)的依赖关系，并且做到当”一“变化的时候，依赖这个“一”的多也能够同步改变。</p>
+</blockquote>
+<h2 id="问题提出"><a href="#问题提出" class="headerlink" title="问题提出"></a>问题提出</h2><p>假设要实现一个文件分割器，将一个大文件分割成若干个小文件。下面将通过对此功能一步步迭代的实现来揭示观察者模式的细节。</p>
+<h2 id="1-0-版本"><a href="#1-0-版本" class="headerlink" title="1.0 版本"></a>1.0 版本</h2><p>这是一种最简单的实现方法（注意：这只是伪代码，旨在说明设计模式的思想）</p>
+<ul>
+<li>FileSplitter 是文件分割器的类</li>
+<li>MainForm 是主窗口的类</li>
+<li>在按钮点击事件中调用文件分割器类进行分割。</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileSplitter</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    string m_filePath;</span><br><span class="line">    <span class="keyword">int</span> m_fileNumber;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">FileSplitter</span>(<span class="keyword">const</span> string&amp; filePath, <span class="keyword">int</span> fileNumber) :</span><br><span class="line">        <span class="built_in">m_filePath</span>(filePath),</span><br><span class="line">        <span class="built_in">m_fileNumber</span>(fileNumber)</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 1. 读取大文件</span></span><br><span class="line">        <span class="comment">// 2. 分批次向小文件写入</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m_fileNumber; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//......</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainForm</span> :</span> <span class="keyword">public</span> Form</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">void</span> Button1Click &#123;</span><br><span class="line">        string filePath = txtFilePath-&gt;<span class="built_in">getText</span>();</span><br><span class="line">        <span class="keyword">int</span> number = <span class="built_in">atoi</span>(txtFileNumber-&gt;<span class="built_in">getText</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        <span class="function">FileSplitter <span class="title">splitter</span><span class="params">(filePath, number)</span></span>;</span><br><span class="line"></span><br><span class="line">        splitter.<span class="built_in">split</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-0-版本"><a href="#2-0-版本" class="headerlink" title="2.0 版本"></a>2.0 版本</h2><p>现在有一个新的需求，如果文件太大，文件分割势必需要更长的时间，为了更直观地显示分割的过程，需要为分割的过程添加一个进度条提示。</p>
+<p>使用一个进度条控件的指针来将控件变量的地址传给文件分割器的对象，从而实现进度的通知。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileSplitter</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    string m_filePath;</span><br><span class="line">    <span class="keyword">int</span> m_fileNumber;</span><br><span class="line">    ProgressBar* m_pProgressBar;        <span class="comment">// 具体的通知控件</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">FileSplitter</span>(<span class="keyword">const</span> string&amp; filePath, <span class="keyword">int</span> fileNumber, ProgressBar* progressBar) :</span><br><span class="line">        <span class="built_in">m_filePath</span>(filePath),</span><br><span class="line">        <span class="built_in">m_fileNumber</span>(fileNumber),</span><br><span class="line">        <span class="built_in">m_pProgressBar</span>(progressBar)     <span class="comment">// 初始化</span></span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 1. 读取大文件</span></span><br><span class="line">        <span class="comment">// 2. 分批次向小文件写入</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m_fileNumber; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//......</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="literal">nullptr</span> != m_pProgressBar)</span><br><span class="line">            &#123;</span><br><span class="line">                m_pProgressBar-&gt;<span class="built_in">setValue</span>((i+<span class="number">1</span>) / m_fileNumber);   <span class="comment">// 更新进度条</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainForm</span> :</span> <span class="keyword">public</span> Form</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line">    ProgressBar m_progressBar;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">void</span> Button1Click &#123;</span><br><span class="line">        string filePath = txtFilePath-&gt;<span class="built_in">getText</span>();</span><br><span class="line">        <span class="keyword">int</span> number = <span class="built_in">atoi</span>(txtFileNumber-&gt;<span class="built_in">getText</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        <span class="function">FileSplitter <span class="title">splitter</span><span class="params">(filePath, number, &amp;m_progressBar)</span></span>;</span><br><span class="line"></span><br><span class="line">        splitter.<span class="built_in">split</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-0-版本"><a href="#3-0-版本" class="headerlink" title="3.0 版本"></a>3.0 版本</h2><p>上面的代码看上去很美好，实际上依然存在一个问题：如果现在这个文件分割类不再用于当前的界面框架，或者干脆就不再是含有界面的程序，那么 FileSplitter 类中的进度条类型的指针便不再有效，代码移植时要修改这个指针的类型，还要修改构造函数、split 方法中的更新进度操作都要作出修改（上面代码中有注释的三处）。下面的代码采用了观察者模式的设计方法，可以便于扩展。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IProgress</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">DoProgress</span><span class="params">(<span class="keyword">double</span> val)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">IProgress</span>() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileSplitter</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    string m_filePath;</span><br><span class="line">    <span class="keyword">int</span> m_fileNumber;</span><br><span class="line">    <span class="comment">// ProgressBar* m_pProgressBar;        // 具体的通知控件</span></span><br><span class="line">    IProgress* m_iProgress;        <span class="comment">// 抽象的通知</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">FileSplitter</span>(<span class="keyword">const</span> string&amp; filePath, <span class="keyword">int</span> fileNumber, ProgressBar* progressBar) :</span><br><span class="line">        <span class="built_in">m_filePath</span>(filePath),</span><br><span class="line">        <span class="built_in">m_fileNumber</span>(fileNumber),</span><br><span class="line">        <span class="built_in">m_iProgress</span>(iProgress)     <span class="comment">// 初始化</span></span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 1. 读取大文件</span></span><br><span class="line">        <span class="comment">// 2. 分批次向小文件写入</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m_fileNumber; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//......</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="literal">nullptr</span> != m_iProgress)</span><br><span class="line">            &#123;</span><br><span class="line">                m_iProgress-&gt;<span class="built_in">DoProgress</span>( (i+<span class="number">1</span>) / m_fileNumber );   <span class="comment">// 更新进度条</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainForm</span> :</span> <span class="keyword">public</span> Form <span class="keyword">public</span> IProgress</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line">    ProgressBar m_progressBar;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">void</span> Button1Click &#123;</span><br><span class="line">        string filePath = txtFilePath-&gt;<span class="built_in">getText</span>();</span><br><span class="line">        <span class="keyword">int</span> number = <span class="built_in">atoi</span>(txtFileNumber-&gt;<span class="built_in">getText</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        <span class="function">FileSplitter <span class="title">splitter</span><span class="params">(filePath, number, <span class="keyword">this</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        splitter.<span class="built_in">split</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">DoProgress</span><span class="params">(<span class="keyword">double</span> val)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_progressBar.<span class="built_in">SetValue</span>(val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>此段代码用抽象的通知代替了具体的通知控件，MainForm 类通过继承 IProgress 类来实现一个 DoProgress 的接口，把这样一个类的指针直接传给 FileSplitter 类的对象，FileSplitter 类中的 split 方法可以用统一的接口调用 DoProgress 方法来实现进度的通知。</p>
+<h2 id="4-0-版本"><a href="#4-0-版本" class="headerlink" title="4.0 版本"></a>4.0 版本</h2><p>下面是一个实现多个观察者的例子，在进度改变时同时通知 MainForm 和 Console 使其发生改变。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IProgress</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">DoProgress</span><span class="params">(<span class="keyword">double</span> val)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">IProgress</span>() &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileSplitter</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    string m_filePath;</span><br><span class="line">    <span class="keyword">int</span> m_fileNumber;</span><br><span class="line">    <span class="comment">// ProgressBar* m_pProgressBar;        // 具体的通知控件</span></span><br><span class="line">    list&lt;IProgress*&gt; m_iProgressList;        <span class="comment">// 抽象的通知列表</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">FileSplitter</span>(<span class="keyword">const</span> string&amp; filePath, <span class="keyword">int</span> fileNumber) :</span><br><span class="line">        <span class="built_in">m_filePath</span>(filePath),</span><br><span class="line">        <span class="built_in">m_fileNumber</span>(fileNumber),</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">add_iPorgress</span><span class="params">(IProgress* iProgress)</span> </span>&#123;</span><br><span class="line">        m_iProgressList.<span class="built_in">push_back</span>(iProgress);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">remove_iProgress</span><span class="params">(IProgress* iProgress)</span> </span>&#123;</span><br><span class="line">        m_iProgressList.<span class="built_in">remove</span>(iProgress);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">split</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 1. 读取大文件</span></span><br><span class="line">        <span class="comment">// 2. 分批次向小文件写入</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; m_fileNumber; ++i)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//......</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">auto</span> it : m_iProgressList)</span><br><span class="line">                it-&gt;<span class="built_in">DoProgress</span>( (i+<span class="number">1</span>) / m_fileNumber );   <span class="comment">// 更新进度条</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainForm</span> :</span> <span class="keyword">public</span> Form <span class="keyword">public</span> IProgress</span><br><span class="line">&#123;</span><br><span class="line">    TextBox* txtFilePath;</span><br><span class="line">    TextBox* txtFileNumber;</span><br><span class="line">    ProgressBar m_progressBar;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">void</span> Button1Click &#123;</span><br><span class="line">        string filePath = txtFilePath-&gt;<span class="built_in">getText</span>();</span><br><span class="line">        <span class="keyword">int</span> number = <span class="built_in">atoi</span>(txtFileNumber-&gt;<span class="built_in">getText</span>().<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">        <span class="function">FileSplitter <span class="title">splitter</span><span class="params">(filePath, number)</span></span>;</span><br><span class="line">        splitter.<span class="built_in">add_iPorgress</span>(<span class="keyword">this</span>);</span><br><span class="line">        splitter.<span class="built_in">add_iPorgress</span>(&amp;con);</span><br><span class="line"></span><br><span class="line">        splitter.<span class="built_in">split</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">DoProgress</span><span class="params">(<span class="keyword">double</span> val)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        m_progressBar.<span class="built_in">SetValue</span>(val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Console</span> :</span> <span class="keyword">public</span> IProgress</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">DoProgress</span><span class="params">(<span class="keyword">double</span> val)</span> </span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;...&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>下面是观察者模式（Observer Pattern）的类图</p>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190730-DesignPatternObserver/Observer.png" alt="Observer"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/ca03da628e50" rel="prev" title="设计模式－策略模式(Strategy)">
+                  <i class="fa fa-chevron-left"></i> 设计模式－策略模式(Strategy)
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/186533953c0c" rel="next" title="设计模式-装饰模式(Decorator)">
+                  设计模式-装饰模式(Decorator) <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"d09a93f3a389584474987ae916ec9034"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

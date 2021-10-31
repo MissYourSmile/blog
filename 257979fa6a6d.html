@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="对 C&#x2F;C++ 字节对齐、位域和柔型数组成员的总结与一些示例分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C&#x2F;C++字节对齐">
+<meta property="og:url" content="https://renshengjihe.cn/257979fa6a6d">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="对 C&#x2F;C++ 字节对齐、位域和柔型数组成员的总结与一些示例分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_1.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_2.png">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_3.png">
+<meta property="article:published_time" content="2019-06-16T06:12:33.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_1.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/257979fa6a6d.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/257979fa6a6d","path":"257979fa6a6d.html","title":"C/C++字节对齐"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C/C++字节对齐 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90"><span class="nav-number">1.</span> <span class="nav-text">字节对齐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90"><span class="nav-number">1.1.</span> <span class="nav-text">什么是字节对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%89%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90"><span class="nav-number">1.2.</span> <span class="nav-text">为什么有字节对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.</span> <span class="nav-text">四个概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E5%AF%B9%E9%BD%90%E9%97%AE%E9%A2%98%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">字节对齐问题实例分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-1-%E7%BB%93%E6%9E%84%E4%BD%93%E5%B5%8C%E5%A5%97"><span class="nav-number">1.4.1.</span> <span class="nav-text">例 1 结构体嵌套</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-2-%E7%A8%8B%E5%BA%8F%E6%8C%87%E5%AE%9A%E5%AF%B9%E9%BD%90%E5%80%BC"><span class="nav-number">1.4.2.</span> <span class="nav-text">例 2 程序指定对齐值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-3-%E5%B5%8C%E5%A5%97%E7%BB%93%E6%9E%84%E4%BD%93%E5%AE%9A%E4%B9%89%E7%9A%84%E5%9D%91"><span class="nav-number">1.4.3.</span> <span class="nav-text">例 3 嵌套结构体定义的坑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-4-%E6%95%B0%E7%BB%84%E6%88%90%E5%91%98"><span class="nav-number">1.4.4.</span> <span class="nav-text">例 4 数组成员</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-5-%E6%9F%94%E6%80%A7%E6%95%B0%E7%BB%84%E6%88%90%E5%91%98"><span class="nav-number">1.4.5.</span> <span class="nav-text">例 5 柔性数组成员</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-6-%E4%BD%8D%E5%9F%9F"><span class="nav-number">1.4.6.</span> <span class="nav-text">例 6 位域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-7-%E8%81%94%E5%90%88%E4%BD%93-union"><span class="nav-number">1.4.7.</span> <span class="nav-text">例 7 联合体 union</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-9-%E6%9E%9A%E4%B8%BE-enum"><span class="nav-number">1.4.8.</span> <span class="nav-text">例 9 枚举 enum</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-10-%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="nav-number">1.4.9.</span> <span class="nav-text">例 10 静态成员</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-11-%E7%BB%A7%E6%89%BF"><span class="nav-number">1.4.10.</span> <span class="nav-text">例 11 继承</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BE%8B-12-%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-number">1.4.11.</span> <span class="nav-text">例 12 虚函数</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/257979fa6a6d">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C/C++字节对齐
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-06-16 14:12:33" itemprop="dateCreated datePublished" datetime="2019-06-16T14:12:33+08:00">2019-06-16</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">对 C/C++ 字节对齐、位域和柔型数组成员的总结与一些示例分析</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>对 C/C++ 字节对齐、位域和柔型数组成员的总结与一些示例分析</p>
+<span id="more"></span>
+
+<h2 id="字节对齐"><a href="#字节对齐" class="headerlink" title="字节对齐"></a>字节对齐</h2><h3 id="什么是字节对齐"><a href="#什么是字节对齐" class="headerlink" title="什么是字节对齐"></a>什么是字节对齐</h3><p>现代计算机中内存空间都是按照byte划分的，从理论上讲似乎对任何类型的变量的访问可以从任何地址开始，但实际情况是在访问特定类型变量的时候经常在特定的内存地址访问，这就需要各种类型数据按照一定的规则在空间上排列，而不是顺序的一个接一个的排放，这就是对齐。</p>
+<h3 id="为什么有字节对齐"><a href="#为什么有字节对齐" class="headerlink" title="为什么有字节对齐"></a>为什么有字节对齐</h3><p>字节对齐主要是通过牺牲一部分存储空间来换取时间的方式，可以通过下面的例子来理解字节对齐的意义：<br><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_1.png" alt="图1_1"></p>
+<ul>
+<li>图1是没有对齐的情况，要取出double型的数据，需要进行三次寻址。然后将三次取得的数据拼接成完整的数据。</li>
+<li>图2是有对齐的情况，只需寻址两次，但相应的char后面的3字节空间不能够使用了。</li>
+</ul>
+<h3 id="四个概念"><a href="#四个概念" class="headerlink" title="四个概念"></a>四个概念</h3><p>在考虑字节对齐相关的问题时，需要遵循下面四点：</p>
+<ol>
+<li><p>基本数据类型的自身对齐值<br> char    1<br> short   2<br> int     4<br> long    4<br> float   4<br> double  4</p>
+</li>
+<li><p>程序的指定对齐值</p>
+<p> 可以通过预编译命令认为指定程序的对齐值</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 指定对齐值为4</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(4)</span></span><br><span class="line"><span class="comment">// 恢复默认对齐值</span></span><br><span class="line"><span class="meta">#progma pack()</span></span><br></pre></td></tr></table></figure></li>
+<li><p>自定义类型的自身对齐值，取内部成员对齐值最大的一个。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">double</span> b;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p> 结构体Test的对齐值为 8 ，大小为 24</p>
+</li>
+<li><p>自定义类型的有效对齐值，程序指定对齐值和自身对齐中最小的一个。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#progma pack(4)</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">short</span> b;</span><br><span class="line">    <span class="keyword">char</span> c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p> 结构体Test的对齐值为 2 ，大小为 6</p>
+</li>
+</ol>
+<h3 id="字节对齐问题实例分析"><a href="#字节对齐问题实例分析" class="headerlink" title="字节对齐问题实例分析"></a>字节对齐问题实例分析</h3><p>下面的例子指针为 4 字节大小，默认对齐值为 8</p>
+<h4 id="例-1-结构体嵌套"><a href="#例-1-结构体嵌套" class="headerlink" title="例 1 结构体嵌套"></a>例 1 结构体嵌套</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 40</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;       <span class="comment">// 2 +6 -&gt; 8</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">int</span> b;     <span class="comment">// 4 +4 -&gt; 8</span></span><br><span class="line">        <span class="keyword">double</span> c;  <span class="comment">// 8</span></span><br><span class="line">        <span class="keyword">char</span> d;    <span class="comment">// 1 +7 -&gt; 8</span></span><br><span class="line">    &#125;;                  </span><br><span class="line">    <span class="keyword">long</span> e;        <span class="comment">// 4 +4 -&gt; 8</span></span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：b、c、d 依然是结构体 Test 的成员，结构体对齐值为 8 </p>
+<h4 id="例-2-程序指定对齐值"><a href="#例-2-程序指定对齐值" class="headerlink" title="例 2 程序指定对齐值"></a>例 2 程序指定对齐值</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 24</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(4)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;       <span class="comment">// 2 +2 -&gt; 4</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">int</span> b;     <span class="comment">// 4</span></span><br><span class="line">        <span class="keyword">double</span> c;  <span class="comment">// 8</span></span><br><span class="line">        <span class="keyword">char</span> d;    <span class="comment">// 1 +3 -&gt; 4</span></span><br><span class="line">    &#125;;                  </span><br><span class="line">    <span class="keyword">long</span> e;        <span class="comment">// 4</span></span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：指定了对齐值为 4，比 4 小的补齐，比 4 大的需为 4 的整数倍</p>
+<h4 id="例-3-嵌套结构体定义的坑"><a href="#例-3-嵌套结构体定义的坑" class="headerlink" title="例 3 嵌套结构体定义的坑"></a>例 3 嵌套结构体定义的坑</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 8</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> pack(8)</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;       <span class="comment">// 2 +2 -&gt; 4</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">t</span>       // 这里结构体有名，相当于没有</span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">int</span> b;    </span><br><span class="line">        <span class="keyword">double</span> c;  </span><br><span class="line">        <span class="keyword">char</span> d;    </span><br><span class="line">    &#125;;                  </span><br><span class="line">    <span class="keyword">long</span> e;        <span class="comment">// 4</span></span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：<code>struct t</code>有名就是定义结构体，不占空间。</p>
+<h4 id="例-4-数组成员"><a href="#例-4-数组成员" class="headerlink" title="例 4 数组成员"></a>例 4 数组成员</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 112</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;            <span class="comment">// 2 +6 -&gt; 8</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">int</span> b;          <span class="comment">// 4 +4 -&gt; 8</span></span><br><span class="line">        <span class="keyword">double</span> c[<span class="number">10</span>];   <span class="comment">// 80</span></span><br><span class="line">        <span class="keyword">char</span> d;         <span class="comment">// 1 +7 -&gt; 8</span></span><br><span class="line">    &#125;;                  </span><br><span class="line">    <span class="keyword">long</span> e;             <span class="comment">// 4 +4 -&gt; 8</span></span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：数组可以理解为 10 个连续的 double 成员</p>
+<h4 id="例-5-柔性数组成员"><a href="#例-5-柔性数组成员" class="headerlink" title="例 5 柔性数组成员"></a>例 5 柔性数组成员</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 8</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span> </span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">char</span> c[<span class="number">0</span>];</span><br><span class="line">&#125;Test;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *str = <span class="string">&quot;abcdefghijklmn&quot;</span>;</span><br><span class="line">    <span class="keyword">int</span> sz = <span class="keyword">sizeof</span>(Test) + <span class="keyword">sizeof</span>(<span class="keyword">char</span>) * (<span class="built_in">strlen</span>(str)+<span class="number">1</span>);</span><br><span class="line">    Test *pt = (Test*)<span class="built_in">malloc</span>(sz);</span><br><span class="line"></span><br><span class="line">    pt-&gt;a = <span class="number">1</span>;</span><br><span class="line">    pt-&gt;b = <span class="number">2</span>;</span><br><span class="line">    <span class="built_in">strcpy</span>(pt-&gt;c, str);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;pt-&gt;a = %d\npt-&gt;b = %d\npt-&gt;c = %s\n&quot;</span>, </span><br><span class="line">        pt-&gt;a, pt-&gt;b, pt-&gt;c);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(pt);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解释：柔型数组成员不占空间，只起到一个占位符的作用，在需要的时候，可以分配给此结构体更大的空间，然后用柔性数组成员作为变量名进行访问。并且不用像指针成员那样考虑内存释放。</p>
+<p>如上代码中的做法就是用柔型数组成员来存储字符串，图示如下：<br><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_2.png" alt="图1_2"></p>
+<h4 id="例-6-位域"><a href="#例-6-位域" class="headerlink" title="例 6 位域"></a>例 6 位域</h4><p>位域对一个字节的内存空间进行了更加精细的划分，指定变量只能占用一个字节数据中的指定位数</p>
+<ul>
+<li>位域不能跨字节存储</li>
+<li>位域不能跨类型存储</li>
+</ul>
+<p>看下面两个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 2</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a : <span class="number">1</span>;     <span class="comment">// 位域 只占 1 个 bit位</span></span><br><span class="line">    <span class="keyword">char</span> b : <span class="number">3</span>;     <span class="comment">// 占 3 个 bit 位</span></span><br><span class="line">    <span class="keyword">char</span> c : <span class="number">3</span>;     <span class="comment">// 占 3 个 bit 位</span></span><br><span class="line">    <span class="keyword">char</span> d : <span class="number">2</span>;     <span class="comment">// 占 2 个 bit 位   另起炉灶</span></span><br><span class="line">    <span class="comment">// 位域不夸字节存储</span></span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>如图所示：<br><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/190616-CCppByteAlign/1_3.png" alt="图1_3"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 8</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a : <span class="number">4</span>; <span class="comment">// 位域不能够跨类型存储</span></span><br><span class="line">    <span class="keyword">int</span> b : <span class="number">5</span>;</span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+
+<h4 id="例-7-联合体-union"><a href="#例-7-联合体-union" class="headerlink" title="例 7 联合体 union"></a>例 7 联合体 union</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 8</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">union</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">double</span> b;</span><br><span class="line">    <span class="keyword">int</span> c;</span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：联合体取最大的一个大小，在笔试时务必看清是 union 还是 struct.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 96</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">union</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">short</span> a;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">int</span> b;</span><br><span class="line">        <span class="keyword">double</span> c[<span class="number">10</span>];</span><br><span class="line">        <span class="keyword">char</span> d;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">long</span> e;</span><br><span class="line">&#125;Test;</span><br></pre></td></tr></table></figure>
+<p>解释：联合体中嵌套结构体，必须保证能够被整个存下。</p>
+<h4 id="例-9-枚举-enum"><a href="#例-9-枚举-enum" class="headerlink" title="例 9 枚举 enum"></a>例 9 枚举 enum</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 4</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">enum</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    ADD=<span class="number">-100</span>,</span><br><span class="line">    SUB,        <span class="comment">// -99</span></span><br><span class="line">    MUL=<span class="number">100</span>,</span><br><span class="line">    DIV,        <span class="comment">// 101</span></span><br><span class="line">    MOD</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>解释：枚举类型占4个字节，</p>
+<ul>
+<li>枚举值默认从0开始</li>
+<li>若自定义了其中一个的值，则下面的值在上面的基础上+1</li>
+</ul>
+<h4 id="例-10-静态成员"><a href="#例-10-静态成员" class="headerlink" title="例 10 静态成员"></a>例 10 静态成员</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 24</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> a;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">double</span> b;</span><br><span class="line">    <span class="keyword">int</span> *p;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>解释：静态成员不占结构体空间</p>
+<h4 id="例-11-继承"><a href="#例-11-继承" class="headerlink" title="例 11 继承"></a>例 11 继承</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 48</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span> x;</span><br><span class="line">    <span class="keyword">double</span> y;</span><br><span class="line">    <span class="keyword">int</span> *z;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> :</span> <span class="keyword">public</span> Base</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">double</span> b;</span><br><span class="line">    <span class="keyword">int</span> *p;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>解释：无论何种继承方式，子类都会继承父类的成员，不同的只是访问权限。</p>
+<h4 id="例-12-虚函数"><a href="#例-12-虚函数" class="headerlink" title="例 12 虚函数"></a>例 12 虚函数</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sizeof(Test) = 16</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Test</span>()&#123;&#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~<span class="built_in">Test</span>()&#123;&#125;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span> a;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">int</span> *p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解释：出现虚函数时，虚表指针会占一个指针大小的空间</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"># C/C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/df80ec7ed7bd" rel="prev" title="C指针总结">
+                  <i class="fa fa-chevron-left"></i> C指针总结
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/fe7ffac747de" rel="next" title="C++继承、多态与虚表分析">
+                  C++继承、多态与虚表分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"ff4c88aca98e8ac62242590700fd0d35"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

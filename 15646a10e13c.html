@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="总结 vim 搭建 C&#x2F;C++ 开发环境的过程，包括了 Linux 和 Windows 下的搭建过程以及 vimrc 文件的模板">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vim打造C&#x2F;C++开发环境">
+<meta property="og:url" content="https://renshengjihe.cn/15646a10e13c">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="总结 vim 搭建 C&#x2F;C++ 开发环境的过程，包括了 Linux 和 Windows 下的搭建过程以及 vimrc 文件的模板">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-05-27T14:25:17.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.979Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="vim">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/15646a10e13c.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/15646a10e13c","path":"15646a10e13c.html","title":"vim打造C/C++开发环境"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>vim打造C/C++开发环境 | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#vim%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">1.</span> <span class="nav-text">vim下载与安装</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#linux%E4%B8%8B%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">linux下的下载与安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#windows%E4%B8%8B%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%AE%89%E8%A3%85"><span class="nav-number">1.2.</span> <span class="nav-text">windows下的下载与安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vim%E6%8F%92%E4%BB%B6%E7%9A%84%E4%B8%8B%E8%BD%BD%E4%B8%8E%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">vim插件的下载与应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E7%9B%AE%E5%BD%95%E5%92%8C%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.1.</span> <span class="nav-text">相关目录和配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%92%E4%BB%B6%E7%AE%A1%E7%90%86%E6%8F%92%E4%BB%B6-pathogen"><span class="nav-number">2.2.</span> <span class="nav-text">插件管理插件 pathogen</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%B9%E9%85%8D%E6%8B%AC%E5%8F%B7%E4%B8%8E%E5%BC%95%E5%8F%B7-auto-pairs"><span class="nav-number">2.3.</span> <span class="nav-text">自动匹配括号与引号 auto-pairs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E7%9B%AE%E5%BD%95%E6%A0%91-NERDTree"><span class="nav-number">2.4.</span> <span class="nav-text">显示目录树 NERDTree</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ctags"><span class="nav-number">2.5.</span> <span class="nav-text">ctags</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#taglist-%E5%88%97%E5%87%BA%E5%87%BD%E6%95%B0%E3%80%81%E5%8F%98%E9%87%8F%E7%AD%89"><span class="nav-number">2.6.</span> <span class="nav-text">taglist  列出函数、变量等</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-C-%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8-omnicppcomplete"><span class="nav-number">2.7.</span> <span class="nav-text">C&#x2F;C++代码补全      omnicppcomplete</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MiniBufExplorer-%E6%98%BE%E7%A4%BA%E5%B7%B2%E6%89%93%E5%BC%80%E7%9A%84%E6%96%87%E4%BB%B6"><span class="nav-number">2.8.</span> <span class="nav-text">MiniBufExplorer  显示已打开的文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SuperTab-%E2%80%94-tab%E9%94%AE%E8%A7%A6%E5%8F%91%E4%BB%A3%E7%A0%81%E8%A1%A5%E5%85%A8"><span class="nav-number">2.9.</span> <span class="nav-text">SuperTab — tab键触发代码补全</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vimrc%E6%96%87%E4%BB%B6%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">3.</span> <span class="nav-text">vimrc文件的编写</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/15646a10e13c">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          vim打造C/C++开发环境
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-05-27 22:25:17" itemprop="dateCreated datePublished" datetime="2019-05-27T22:25:17+08:00">2019-05-27</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" itemprop="url" rel="index"><span itemprop="name">环境搭建</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">总结 vim 搭建 C/C++ 开发环境的过程，包括了 Linux 和 Windows 下的搭建过程以及 vimrc 文件的模板</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <ul>
+<li><strong>用vim打造出 C/C++ 编程环境</strong>的方法</li>
+<li><strong>多个平台</strong>（Windows与linux）下vim的安装与配置</li>
+<li>提供了<strong>扩展多种编程语言</strong>的方案</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="vim下载与安装"><a href="#vim下载与安装" class="headerlink" title="vim下载与安装"></a>vim下载与安装</h2><h3 id="linux下的下载与安装"><a href="#linux下的下载与安装" class="headerlink" title="linux下的下载与安装"></a>linux下的下载与安装</h3><ul>
+<li><p>Ubuntu下使用命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install vim</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>CentOs下使用命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install vim</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="windows下的下载与安装"><a href="#windows下的下载与安装" class="headerlink" title="windows下的下载与安装"></a>windows下的下载与安装</h3><ul>
+<li>官网下载gvim安装包点击安装即可<br><a target="_blank" rel="noopener" href="https://www.vim.org/download.php#pc">点此下载</a></li>
+<li>安装时务必记住安装路径，以便之后的配置；</li>
+<li>安装路径不要出现中文或空格，以避免一些奇怪的错误</li>
+</ul>
+<h2 id="vim插件的下载与应用"><a href="#vim插件的下载与应用" class="headerlink" title="vim插件的下载与应用"></a>vim插件的下载与应用</h2><h3 id="相关目录和配置文件"><a href="#相关目录和配置文件" class="headerlink" title="相关目录和配置文件"></a>相关目录和配置文件</h3><ul>
+<li><p>vimrc 配置文件</p>
+<p> linux下为 <code>~/.vimrc</code> , windows下为安装目录下的 <code>_vimrc</code>文件</p>
+</li>
+<li><p>linux下vim插件的存放目录为</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.vim/</span><br><span class="line">#如没有可自行创建</span><br><span class="line">#mkdir ~/.vim/</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>windows下插件存放目录为，软件安装目录下的 <code>vimfile </code>文件夹</p>
+</li>
+</ul>
+<h3 id="插件管理插件-pathogen"><a href="#插件管理插件-pathogen" class="headerlink" title="插件管理插件 pathogen"></a>插件管理插件 pathogen</h3><ul>
+<li><p>项目地址</p>
+<p> <a target="_blank" rel="noopener" href="https://github.com/tpope/vim-pathogen">https://github.com/tpope/vim-pathogen</a></p>
+</li>
+<li><p>安装命令</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~/.vim/autoload ~/.vim/bundle &amp;&amp; curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解释</p>
+<ul>
+<li>在~/.vim/目录下创建两个文件夹autoload 和 bundle</li>
+<li>将 pathogen.vim 文件下载到autoload目录下</li>
+<li>将其他插件放在 bundle 目录下， pathogen会自动将其配置，而不用自己将文件放在不同的目录</li>
+<li>linux下可以直接复制上面的安装命令(当然前提时安装了git) ，</li>
+<li>windows下从项目地址将文件下载下来按照上述说明建立相应的文件夹并将文件复制进去即可</li>
+</ul>
+</li>
+</ul>
+<h3 id="自动匹配括号与引号-auto-pairs"><a href="#自动匹配括号与引号-auto-pairs" class="headerlink" title="自动匹配括号与引号 auto-pairs"></a>自动匹配括号与引号 auto-pairs</h3><ul>
+<li><p>项目地址 </p>
+<p> <a target="_blank" rel="noopener" href="https://github.com/jiangmiao/auto-pairs">https://github.com/jiangmiao/auto-pairs</a></p>
+</li>
+<li><p>安装命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git://github.com/jiangmiao/auto-pairs.git ~/.vim/bundle/auto-pair</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解释</p>
+<p> 从GitHub上获取项目的文件夹复制到 ~/.vim/bundle 目录下（此后的插件都是此方式，之后不再赘述）</p>
+</li>
+</ul>
+<h3 id="显示目录树-NERDTree"><a href="#显示目录树-NERDTree" class="headerlink" title="显示目录树 NERDTree"></a>显示目录树 NERDTree</h3><ul>
+<li><p>项目地址</p>
+<p> <a target="_blank" rel="noopener" href="https://github.com/scrooloose/nerdtree">https://github.com/scrooloose/nerdtree</a></p>
+</li>
+<li><p>安装命令</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="ctags"><a href="#ctags" class="headerlink" title="ctags"></a>ctags</h3><ul>
+<li><p>说明</p>
+<p> ctags并不是一个vim的插件，它是一个可执行的程序，通过它可以生成索引文件，用于变量与函数的跳转，列出及代码补全</p>
+</li>
+<li><p>linux下的安装</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install ctags		#Ubuntu</span><br><span class="line">sudo yum install ctags			#CentOs</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>windows下的安装 <a target="_blank" rel="noopener" href="http://prdownloads.sourceforge.net/ctags/ctags58.zip">点此下载</a></p>
+<p> 把下载下来的压缩文件解压，把其中的 ctags.exe 文件添加环境变量（不会请自行百度）</p>
+</li>
+</ul>
+<h3 id="taglist-列出函数、变量等"><a href="#taglist-列出函数、变量等" class="headerlink" title="taglist  列出函数、变量等"></a>taglist  列出函数、变量等</h3><ul>
+<li><p>项目地址 </p>
+<p> <a target="_blank" rel="noopener" href="http://www.vim.org/scripts/script.php?script_id=273">http://www.vim.org/scripts/script.php?script_id=273</a></p>
+</li>
+<li><p>安装命令</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.vim/bundle &amp;&amp; wget &quot;http://www.vim.org/scripts/download_script.php?src_id=19574&quot; -O taglist.zip &amp;&amp; unzip taglist.zip -d taglist</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="C-C-代码补全-omnicppcomplete"><a href="#C-C-代码补全-omnicppcomplete" class="headerlink" title="C/C++代码补全      omnicppcomplete"></a>C/C++代码补全      omnicppcomplete</h3><ul>
+<li><p>项目地址</p>
+<p> <a target="_blank" rel="noopener" href="http://www.vim.org/scripts/script.php?script_id=1520">http://www.vim.org/scripts/script.php?script_id=1520</a></p>
+</li>
+<li><p>安装命令</p>
+ <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.vim/bundle &amp;&amp; wget &quot;http://www.vim.org/scripts/download_script.php?src_id=7722&quot; -O omnicppcomplete.zip &amp;&amp; unzip omnicppcomplete.zip -d omnicppcomplete</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>额外添加库函数补全的方法</p>
+<p> 以 STL 标准库为例</p>
+<ul>
+<li><p>下载用于生成 tags 文件的补全文件<br><a target="_blank" rel="noopener" href="http://www.vim.org/scripts/script.php?script_id=2358">点此下载</a></p>
+</li>
+<li><p>建立一个文件夹方便统一管理,(这里我选择在.vim/ 下建立一个名为 tags 的文件夹)</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~/.vim/tags &amp;&amp; cd ~/.vim/tags &amp;&amp; wget &quot;http://www.vim.org/scripts/download_script.php?src_id=9178&quot; -O - | tar jxvf -</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生成 tags 文件，在 <code>~/.vim/tags/cpp_src/</code>目录下执行如下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctags -R --sort=yes --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加tags文件路径到 vimrc</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set tags+=~/.vim/tags/cpp_src/tags</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="MiniBufExplorer-显示已打开的文件"><a href="#MiniBufExplorer-显示已打开的文件" class="headerlink" title="MiniBufExplorer  显示已打开的文件"></a>MiniBufExplorer  显示已打开的文件</h3><ul>
+<li><p>项目地址</p>
+<p>  <a target="_blank" rel="noopener" href="http://www.vim.org/scripts/download_script.php?src_id=3640">http://www.vim.org/scripts/download_script.php?src_id=3640</a></p>
+</li>
+<li><p>安装命令</p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~/.vim/bundle/minibufexplorer/plugin &amp;&amp; wget &quot;http://www.vim.org/scripts/download_script.php?src_id=3640&quot; -O ~/.vim/bundle/minibufexplorer/plugin/minibufexpl.vim</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="SuperTab-—-tab键触发代码补全"><a href="#SuperTab-—-tab键触发代码补全" class="headerlink" title="SuperTab — tab键触发代码补全"></a>SuperTab — tab键触发代码补全</h3><ul>
+<li><p>项目地址     </p>
+<p>  <a target="_blank" rel="noopener" href="https://github.com/ervandew/supertab">https://github.com/ervandew/supertab</a></p>
+</li>
+<li><p>安装命令    </p>
+  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.vim/bundle &amp;&amp; git clone https://github.com/ervandew/supertab.gi</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="vimrc文件的编写"><a href="#vimrc文件的编写" class="headerlink" title="vimrc文件的编写"></a>vimrc文件的编写</h2><p>以下是我的vimrc文件</p>
+<p>几点说明</p>
+<ul>
+<li>文件中各个部分都做了注释，应该比较容易看懂</li>
+<li>文件中有些补全插件在文中并未提及，有些我自己也没装，可根据需要自行查找，这里提供的只是一个支持多种编程语言的vimrc文件编写思路，请见谅</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br></pre></td><td class="code"><pre><span class="line">&quot;============================</span><br><span class="line">&quot;  windows下解决乱码问题(linux下不需要)</span><br><span class="line">&quot;============================</span><br><span class="line">set encoding=utf-8</span><br><span class="line">set fileencodings=utf-8,chinese,latin-1</span><br><span class="line">if has(&quot;win32&quot;)</span><br><span class="line">set fileencoding=chinese</span><br><span class="line">else</span><br><span class="line">set fileencoding=utf-8</span><br><span class="line">endif</span><br><span class="line">&quot;解决菜单乱码</span><br><span class="line">source $VIMRUNTIME/delmenu.vim</span><br><span class="line">source $VIMRUNTIME/menu.vim</span><br><span class="line">&quot;解决consle输出乱码</span><br><span class="line">language messages zh_CN.utf-</span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  基本设置</span><br><span class="line">&quot;============================</span><br><span class="line">syntax enable 					&quot;开启语法高亮</span><br><span class="line">syntax on 						&quot;开启语法高亮</span><br><span class="line"></span><br><span class="line">filetype on 					&quot;检测文件类型</span><br><span class="line">filetype plugin on 				&quot;针对不同文件采取不同缩进方式</span><br><span class="line">filetype indent on 				&quot;允许插件</span><br><span class="line">filetype plugin indent on 		&quot;启动自动补全</span><br><span class="line"></span><br><span class="line">set number						&quot;显示行号</span><br><span class="line">set ruler 						&quot;显示当前行号</span><br><span class="line">set showmode 					&quot;显示当前Vim模式</span><br><span class="line">set showcmd 					&quot;显示正在输入的命令</span><br><span class="line">set tabstop=4 					&quot;设置tab宽度</span><br><span class="line">set shiftwidth=4 				&quot;设置自动对齐空格数</span><br><span class="line">set smarttab 					&quot;设置backspace删去tab&quot;</span><br><span class="line">set mouse=a 					&quot;允许鼠标操作</span><br><span class="line">set nobackup 					&quot;取消备份</span><br><span class="line">set noswapfile 					&quot;取消临时文件</span><br><span class="line">set encoding=utf-8 				&quot;设置编码方式</span><br><span class="line">set helplang=cn 				&quot;中文帮助</span><br><span class="line">set completeopt=longest,menu 	&quot;自动补全配置</span><br><span class="line">set wildmenu 					&quot;增强命令行自动完成操作</span><br><span class="line"></span><br><span class="line">&quot;pathogen 插件管理</span><br><span class="line">execute pathogen#infect()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  TagList插件设置</span><br><span class="line">&quot;============================</span><br><span class="line">autocmd FileType cpp set tags+=~/.vim/tags/cpp_src/tags  &quot;设置tags文件包含</span><br><span class="line">let Tlist_Show_One_File=1    	&quot; 只展示一个文件的taglist</span><br><span class="line">let Tlist_Exit_OnlyWindow=1  	&quot; 当taglist是最后一个窗口时自动退出</span><br><span class="line">let Tlist_Use_Right_Window=1 	&quot; 在右边显示taglist窗口</span><br><span class="line">let Tlist_Sort_Type=&quot;name&quot;   	&quot; tag按名字排序</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  补全插件设置</span><br><span class="line">&quot;============================</span><br><span class="line">autocmd FileType css set omnifunc=csscomplete#CompleteCSS</span><br><span class="line">autocmd FileType html set omnifunc=htmlcomplete#CompleteTags</span><br><span class="line">autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS</span><br><span class="line">autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags</span><br><span class="line">autocmd FileType php set omnifunc=phpcomplete#CompletePHP</span><br><span class="line">autocmd FileType ruby set omnifunc=rubycomplete#Complete</span><br><span class="line">autocmd FileType perl set omnifunc=perlcomplete#Complete</span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  C++ 补全插件设置</span><br><span class="line">&quot;============================</span><br><span class="line">autocmd Filetype c setlocal omnifunc=cppcomplete#Complete</span><br><span class="line">autocmd Filetype cpp setlocal omnifunc=cppcomplete#Complete</span><br><span class="line">&quot; search namespaces in the current buffer   and in included files</span><br><span class="line">let OmniCpp_NamespaceSearch = 2     </span><br><span class="line">let OmniCpp_ShowPrototypeInAbbr = 1 &quot; 显示函数参数列表</span><br><span class="line">let OmniCpp_MayCompleteScope = 1    &quot; 输入 :: 后自动补全</span><br><span class="line">let OmniCpp_DefaultNamespaces = [&quot;std&quot;, &quot;_GLIBCXX_STD&quot;]</span><br><span class="line">let OmniCpp_DisplayMode = 1 		&quot;always show all members</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  Python 补全插件设置</span><br><span class="line">&quot;============================</span><br><span class="line">autocmd Filetype python setlocal omnifunc=pythoncomplete#Complete</span><br><span class="line">let g:pydiction_location=&#x27;~/.vim/tools/pydiction/complete-dict&#x27;</span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  Java 补全插件设置</span><br><span class="line">&quot;============================</span><br><span class="line">autocmd Filetype java setlocal omnifunc=javacomplete#Complete</span><br><span class="line">autocmd FileType java set omnifunc=javacomplete#Complete   </span><br><span class="line">autocmd FileType java set completefunc=javacomplete#CompleteParamsInf</span><br><span class="line">autocmd FileType java inoremap &lt;buffer&gt; . .&lt;C-X&gt;&lt;C-O&gt;&lt;C-P&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  自动添加文件头</span><br><span class="line">&quot;============================</span><br><span class="line">&quot;新建.c,.h,.sh,.java文件，自动插入文件头 </span><br><span class="line">autocmd BufNewFile *.cpp,*.[ch],*.sh,*.rb,*.java,*.py exec &quot;:call SetTitle()&quot; </span><br><span class="line">&quot;&quot;定义函数SetTitle，自动插入文件头 </span><br><span class="line">func SetTitle() </span><br><span class="line">    &quot;如果文件类型为.sh文件 </span><br><span class="line">    if &amp;filetype == &#x27;sh&#x27; </span><br><span class="line">        call setline(1,&quot;\#!/bin/bash&quot;) </span><br><span class="line">        call append(line(&quot;.&quot;), &quot;&quot;) </span><br><span class="line">    elseif &amp;filetype == &#x27;python&#x27;</span><br><span class="line">        call setline(1,&quot;#!/usr/bin/env python&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;),&quot;# coding=utf-8&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+1, &quot;&quot;) </span><br><span class="line">    else </span><br><span class="line">        call setline(1, &quot;/*************************************************************************&quot;) </span><br><span class="line">        call append(line(&quot;.&quot;), &quot;    &gt; File Name: &quot;.expand(&quot;%&quot;)) </span><br><span class="line">        call append(line(&quot;.&quot;)+1, &quot;    &gt; Author: DHD&quot;) </span><br><span class="line">        call append(line(&quot;.&quot;)+2, &quot;    &gt; Mail: &quot;) </span><br><span class="line">        call append(line(&quot;.&quot;)+3, &quot;    &gt; Created Time: &quot;.strftime(&quot;%c&quot;)) </span><br><span class="line">        call append(line(&quot;.&quot;)+4, &quot; ************************************************************************/&quot;) </span><br><span class="line">        call append(line(&quot;.&quot;)+5, &quot;&quot;)</span><br><span class="line">    endif</span><br><span class="line">    if expand(&quot;%:e&quot;) == &#x27;cpp&#x27;</span><br><span class="line">        call append(line(&quot;.&quot;)+6, &quot;#include&lt;iostream&gt;&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+7, &quot;using namespace std;&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+8, &quot;&quot;)</span><br><span class="line">    endif</span><br><span class="line">    if &amp;filetype == &#x27;c&#x27;</span><br><span class="line">        call append(line(&quot;.&quot;)+6, &quot;#include&lt;stdio.h&gt;&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+7, &quot;&quot;)</span><br><span class="line">    endif</span><br><span class="line">    if expand(&quot;%:e&quot;) == &#x27;h&#x27;</span><br><span class="line">        call append(line(&quot;.&quot;)+6, &quot;#ifndef _&quot;.toupper(expand(&quot;%:r&quot;)).&quot;_H&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+7, &quot;#define _&quot;.toupper(expand(&quot;%:r&quot;)).&quot;_H&quot;)</span><br><span class="line">        call append(line(&quot;.&quot;)+8, &quot;#endif&quot;)</span><br><span class="line">    endif</span><br><span class="line">    if &amp;filetype == &#x27;java&#x27;</span><br><span class="line">        call append(line(&quot;.&quot;)+6,&quot;public class &quot;.expand(&quot;%:r&quot;))</span><br><span class="line">        call append(line(&quot;.&quot;)+7,&quot;&quot;)</span><br><span class="line">    endif</span><br><span class="line">    &quot;新建文件后，自动定位到文件末尾</span><br><span class="line">endfunc </span><br><span class="line">autocmd BufNewFile * normal G</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  快捷键设置</span><br><span class="line">&quot;============================</span><br><span class="line">&quot;Ctrl + n 打开目录树</span><br><span class="line">map &lt;C-n&gt; :NERDTree&lt;CR&gt; 		</span><br><span class="line">&quot;Ctrl + t 打开 taglist</span><br><span class="line">map &lt;F8&gt; :Tlist&lt;CR&gt;</span><br><span class="line">&quot;ctags 生成 cpp 文件的 tags</span><br><span class="line">map &lt;F12&gt; :call CreateTags()&lt;CR&gt;</span><br><span class="line">&quot;&lt;F5&gt; 编译运行</span><br><span class="line">map &lt;F5&gt; :call ComplieAndRun() &lt;CR&gt;</span><br><span class="line">&quot;&lt;C-F5&gt; 调试</span><br><span class="line">map &lt;C-F5&gt; :call Rungdb() &lt;CR&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&quot;============================</span><br><span class="line">&quot;  函数定义</span><br><span class="line">&quot;============================</span><br><span class="line">&quot;编译</span><br><span class="line">func! ComplieAndRun()</span><br><span class="line">	exec &quot;w&quot;</span><br><span class="line">	if &amp;filetype == &#x27;c&#x27;</span><br><span class="line">        exec &quot;!g++ % -o %&lt;&quot;</span><br><span class="line">        exec &quot;!time ./%&lt;&quot;</span><br><span class="line">    elseif &amp;filetype == &#x27;cpp&#x27;</span><br><span class="line">        exec &quot;!g++ % -std=c++11 -o %&lt;&quot;</span><br><span class="line">        exec &quot;!time ./%&lt;&quot;</span><br><span class="line">    elseif &amp;filetype == &#x27;java&#x27; </span><br><span class="line">        exec &quot;!javac %&quot; </span><br><span class="line">        exec &quot;!time java %&lt;&quot;</span><br><span class="line">    elseif &amp;filetype == &#x27;sh&#x27;</span><br><span class="line">        :!time bash %</span><br><span class="line">    elseif &amp;filetype == &#x27;python&#x27;</span><br><span class="line">       &quot;exec &quot;!time python2.7 %&quot;</span><br><span class="line">        exec &quot;!time python3.6 %&quot;</span><br><span class="line">    elseif &amp;filetype == &#x27;html&#x27;</span><br><span class="line">        exec &quot;!google-chrome % &amp;&quot;</span><br><span class="line">    endif</span><br><span class="line">endfunc</span><br><span class="line"></span><br><span class="line">&quot;调试</span><br><span class="line">func! Rungdb()</span><br><span class="line">	exec &quot;w&quot;</span><br><span class="line">	exec &quot;!g++ % -std=c++11 -g -o %&lt;&quot;</span><br><span class="line">	exec &quot;!gdb ./%&lt;&quot;</span><br><span class="line">endfunc</span><br><span class="line"></span><br><span class="line">&quot;生成tags文件</span><br><span class="line">func! CreateTags()</span><br><span class="line">	if &amp;filetype == &#x27;c&#x27;</span><br><span class="line">		exec &quot;!ctags *.c *.h --c-kinds=+p --fields=+iaS --extra=+fq &quot;</span><br><span class="line">	elseif &amp;filetype == &#x27;cpp&#x27;</span><br><span class="line">		exec &quot;!ctags *.cpp *.h *.hpp *.c --c++-kinds=+px --fields=+iaS --extra=+fq &quot;</span><br><span class="line">	elseif &amp;filetype == &#x27;java&#x27;</span><br><span class="line">		exec &quot;!ctags *.java --java-kinds=+p --fields=+iaS --extra=+fq &quot;</span><br><span class="line">	elseif &amp;filetype == &#x27;python&#x27;</span><br><span class="line">		exec &quot;!ctags *.py --python-kinds --fields=+iaS --extra=+f &quot;</span><br><span class="line">	elseif &amp;filetype == &#x27;html&#x27;</span><br><span class="line">		exec &quot;!ctags *.html --html-kinds=+p --fields=+iaS --extra=+f &quot;</span><br><span class="line">	endif</span><br><span class="line">endfunc</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/vim/" rel="tag"># vim</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/ebd766d2cfb1" rel="next" title="Tinyhttpd源码解析">
+                  Tinyhttpd源码解析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"542a5515195213b8f131267c3d6be125"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

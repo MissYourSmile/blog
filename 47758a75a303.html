@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/mylogo-128x128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/mylogo-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/mylogo-16x16.png">
+  <link rel="mask-icon" href="/images/mylogo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"renshengjihe.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":"ture","bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="编写了一个简单的HelloWorld内核模块，并使用qemu模拟的arm环境进行测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内核模块-hello.ko">
+<meta property="og:url" content="https://renshengjihe.cn/47758a75a303">
+<meta property="og:site_name" content="人生几何">
+<meta property="og:description" content="编写了一个简单的HelloWorld内核模块，并使用qemu模拟的arm环境进行测试">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200303-helloworldko/result.png">
+<meta property="article:published_time" content="2020-03-03T15:02:44.000Z">
+<meta property="article:modified_time" content="2021-10-22T16:44:27.989Z">
+<meta property="article:author" content="dhd">
+<meta property="article:tag" content="Linux内核">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200303-helloworldko/result.png">
+
+
+<link rel="canonical" href="https://renshengjihe.cn/47758a75a303.html">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://renshengjihe.cn/47758a75a303","path":"47758a75a303.html","title":"内核模块-hello.ko"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>内核模块-hello.ko | 人生几何</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">人生几何</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">一个普通程序员的技术博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">内核模块的意义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hello-World"><span class="nav-number">2.</span> <span class="nav-text">Hello, World</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.1.</span> <span class="nav-text">模块初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E9%80%80%E5%87%BA"><span class="nav-number">2.2.</span> <span class="nav-text">模块退出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E4%BF%A1%E6%81%AF%E7%9A%84%E5%AE%8F"><span class="nav-number">2.3.</span> <span class="nav-text">记录信息的宏</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-number">3.</span> <span class="nav-text">构建模块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BD%BD%E5%85%A5%E6%A8%A1%E5%9D%97"><span class="nav-number">4.</span> <span class="nav-text">载入模块</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="dhd"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">dhd</p>
+  <div class="site-description" itemprop="description">个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/MissYourSmile" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;MissYourSmile" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:donghaodong555@qq.com" title="E-Mail → mailto:donghaodong555@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://renshengjihe.cn/47758a75a303">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="dhd">
+      <meta itemprop="description" content="个人博客，分享一些C/C++ Linux 嵌入式等有趣的技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="人生几何">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          内核模块-hello.ko
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-03 23:02:44" itemprop="dateCreated datePublished" datetime="2020-03-03T23:02:44+08:00">2020-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-10-23 00:44:27" itemprop="dateModified" datetime="2021-10-23T00:44:27+08:00">2021-10-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Linux%E5%86%85%E6%A0%B8/" itemprop="url" rel="index"><span itemprop="name">Linux内核</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+            <div class="post-description">编写了一个简单的HelloWorld内核模块，并使用qemu模拟的arm环境进行测试</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>本文讲述了一个最简单的内核模块HelloWorld编写、构建、载入的全过程。需要的环境如下：</p>
+<blockquote>
+<p>内核版本 linux-5.5.6<br>交叉编译器 arm-linux-gnueabi-<br>根文件系统 busybox-1.31.1<br>虚拟机环境 qemu-system-arm</p>
+</blockquote>
+<p>以上相关环境的搭建过程详见前文《<a target="_blank" rel="noopener" href="https://www.renshengjihe.cn/200227-BusyboxMinimunSystem.html">用Busybox制作Linux最小根文件系统</a>》</p>
+<h1 id="内核模块的意义"><a href="#内核模块的意义" class="headerlink" title="内核模块的意义"></a>内核模块的意义</h1><p>Linux内核是模块化组成的，它允许内核在运行时动态地向其中插入或从中删除代码。这些代码（包括相关的子例程、数据、函数入口和函数出口）被一并组合在一个单独的二进制镜像中，即所谓的可装载内核模块中，或简称为模块。</p>
+<p>支持模块的好处是基本的内核镜像可以尽可能地小，因为可选的功能和驱动程序可以利用模块形式来提供。模块允许我们方便地删除和重新载入内核代码，也方便了调试工作。而且当热插拔新设备时，可通过命令载入新的驱动程序。</p>
+<h1 id="Hello-World"><a href="#Hello-World" class="headerlink" title="Hello, World"></a>Hello, World</h1><p>一个最简单的Hello， World内核模块代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * hello.c </span></span><br><span class="line"><span class="comment"> * Hello World 内核模块</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/init.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/module.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;linux/kernel.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * hello_init - 初始化函数，当模块装载时调用。</span></span><br><span class="line"><span class="comment"> * 成功返回零，否则返回非零值。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hello_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">&quot;I hear a charmed life.\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * hello_exit - 退出函数，当模块卸载时被调用。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hello_exit</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    printk(KERN_ALERT <span class="string">&quot;Out, out, brief candle!\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module_init(hello_init);</span><br><span class="line">module_exit(hello_exit);</span><br><span class="line"></span><br><span class="line">MODULE_LICENSE(<span class="string">&quot;GPL&quot;</span>);</span><br><span class="line">MODULE_AUTHOR(<span class="string">&quot;dhd&quot;</span>);</span><br><span class="line">MODULE_DESCRIPTION(<span class="string">&quot;A Hello, World Module&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="模块初始化"><a href="#模块初始化" class="headerlink" title="模块初始化"></a>模块初始化</h2><p><code>hello_init</code>函数是模块的入口，通过<code>module_init()</code>宏调用注册到系统中，在内核装载时被调用。初始化函数必须符合下面的形式</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">my_init</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>通常情况下，初始化函数不会导出，可标记为<code>static</code>.</p>
+<p><code>init</code>函数会返回一个<code>int</code>型数值，成功返回零，否则，返回非零值。</p>
+<h2 id="模块退出"><a href="#模块退出" class="headerlink" title="模块退出"></a>模块退出</h2><p><code>hello_exit</code>函数是模块的出口，通过<code>module_exit()</code>宏调用注册到系统中，在模块从内存中卸载时被内核调用。退出函数必须符合下面的形式</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">my_exit</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>exit</code>函数也可以标记为<code>static</code></p>
+<p>退出函数可能会在返回前负责清理资源，以保证硬件处于一致状态，或者做其他的一些操作。</p>
+<h2 id="记录信息的宏"><a href="#记录信息的宏" class="headerlink" title="记录信息的宏"></a>记录信息的宏</h2><p><code>MODULE_LICENSE()</code> 宏用于指定模块的版权。如果载入非<code>GPL</code>模块到系统内存，则会在内核中设置被污染标识。<br><code>MODULE_AUTHOR()</code> 宏指定代码作者。<br><code>MODULE_DESCRIPTION()</code> 宏是对模块的简要描述。</p>
+<h1 id="构建模块"><a href="#构建模块" class="headerlink" title="构建模块"></a>构建模块</h1><p>Linux内核模块的编译有两种方式：</p>
+<ol>
+<li>放在内核代码树中</li>
+<li>放在内核代码树外</li>
+</ol>
+<p>这里我选择了放在内核代码树外进行编译。下面先说明一下我们的内核代码和模块代码所在的目录</p>
+<ul>
+<li>内核代码目录： <code>~/kernel/linux-5.5.6</code></li>
+<li>模块代码目录： <code>~/kernel/my_kernel_obj/helloworld</code></li>
+<li>模块代码文件： <code>~/kernel/my_kernel_obj/helloworld/hello.c</code></li>
+</ul>
+<p>在模块代码目录下新建一个<code>Makefile</code>文件，内容如下：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">obj-m := hello.o</span><br><span class="line">KERNEL_DIR := ~/kernel/linux-5.5.6/</span><br><span class="line">PWD := <span class="variable">$(<span class="built_in">shell</span> pwd)</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	make -C <span class="variable">$(KERNEL_DIR)</span> M=<span class="variable">$(PWD)</span> modules</span><br></pre></td></tr></table></figure>
+
+<p><code>obj-m := hello.o</code> 这一行是告诉编译器将<code>hello.c</code>编译为内核模块。</p>
+<p><code>KERNEL_DIR</code> 是内核代码的顶层目录。</p>
+<p><code>PWD</code> 是当前目录，表示将结果输出在当前目录（模块代码目录）下。</p>
+<p>直接 <code>make</code> 编译。</p>
+<blockquote>
+<p>ps: 由于我已经通过修改内核顶层<code>Makefile</code>文件指定了交叉编译选项，此处<code>make</code>时无须重复指定。</p>
+</blockquote>
+<p>完成后，模块代码目录下内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dhd@dhd-pc:~/kernel/my_kernel_obj/helloworld$ ls</span><br><span class="line">hello.c   hello.mod    hello.mod.o  Makefile       Module.symvers</span><br><span class="line">hello.ko  hello.mod.c  hello.o      modules.order</span><br></pre></td></tr></table></figure>
+
+<p><code>hello.ko</code> 就是所需的内核模块。</p>
+<h1 id="载入模块"><a href="#载入模块" class="headerlink" title="载入模块"></a>载入模块</h1><p>载入内核模块的命令是 <code>insmod</code>, 删除内核模块的命令是 <code>rmmod</code></p>
+<p>把刚刚生成的<code>hello.ko</code>拷贝到根文件系统目录下，并重新生成根文件系统镜像，最后用先前写好的<code>qemu</code>启动脚本启动。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cp hello.ko ~/qemu/rootfs/lib/</span><br><span class="line"><span class="built_in">cd</span> ~/qemu/rootfs/</span><br><span class="line">find . | cpio -o -H newc | gzip &gt; ../rootfs.img</span><br><span class="line"><span class="built_in">cd</span> ~/qemu/</span><br><span class="line">./arm_start.sh</span><br></pre></td></tr></table></figure>
+
+<p>进入系统后，使用命令载入和删除内核模块进行测试。如下</p>
+<blockquote>
+<p>ps：第一次 <code>insmod</code> 不成功是因为在系统初始化脚本中加了 <code>insmod /lib/hello.ko</code></p>
+</blockquote>
+<p><img src="https://renshengjihe-1257851699.cos.ap-guangzhou.myqcloud.com/200303-helloworldko/result.png" alt="result"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux%E5%86%85%E6%A0%B8/" rel="tag"># Linux内核</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/1fe7a0c955f0" rel="prev" title="用Busybox制作Linux最小根文件系统">
+                  <i class="fa fa-chevron-left"></i> 用Busybox制作Linux最小根文件系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/6db558f0bbbe" rel="next" title="u-boot加载内核并挂载根文件系统（mini2440）">
+                  u-boot加载内核并挂载根文件系统（mini2440） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">dhd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">false</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"MissYourSmile","repo":"blog","client_id":"90df46a08046f5b73ae9","client_secret":"fa93eaa0abad10d0f79e056b45ba8a0212d37e0d","admin_user":"MissYourSmile","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"f9ca4a1ac418d412bbdb1eb056804753"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
